@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="home :: common_head"></head>
+<body>
+<div th:replace="home :: common_nav"></div>
+
+<div class="container" style="padding-bottom: 200px">
+    <div class="row" style="margin-top: 2%; padding-top: 50px; ">
+        <ol class="breadcrumb">
+            <li><a href="/">首页</a></li>
+            <li class="active">智学名师团</li><!--显示最受关注的一百名讲师-->
+        </ol>
+    </div>
+    <div class="page-header">
+        <h3>名师风采 <small>Subtext for header</small></h3>
+        <div class="row">
+            <div class="courseProfile" style="width: 230px; display: inline-block;"
+                 th:each="lectFollowView, lectFollowViewStat: ${lectFollowViewList}">
+                <div class="thumbnail" style="margin: 10px;">
+                    <a th:href="@{'/student/lecturer/lect-info?username='+${lectFollowView.lectUsername}}">
+                        <img th:src="${lectFollowView.lectImageSite}" alt="课程缩略图">
+                    </a>
+                    <div class="caption">
+                        讲师：<span th:text="${lectFollowView.lectNickname}">昵称</span><br>
+                        介绍：<span class="profile" th:text="${lectFollowView.profile}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="home :: footer"></div>
+</body>
+</html>

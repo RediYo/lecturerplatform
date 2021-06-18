@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="admin/admin_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="admin/admin_fragment :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="list-group "><!--列表组-->
+                <a href="/admin/application/list" class="list-group-item active"><span
+                        class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 讲师申请</a>
+                <a href="/admin/data/show" class="list-group-item"><span class="glyphicon glyphicon-th-list"
+                                                                         aria-hidden="true"></span> 后台数据</a>
+                <a href="/admin/setting" class="list-group-item"><span class="glyphicon glyphicon-cog"
+                                                                       aria-hidden="true"></span> 课程设置</a>
+                <a href="/admin/order/list" class="list-group-item"><span class="glyphicon glyphicon-euro"
+                                                                          aria-hidden="true"></span> 订单管理</a>
+                <a href="/admin/feedback/list" class="list-group-item"><span class="glyphicon glyphicon-comment"
+                                                                             aria-hidden="true"></span> 平台反馈</a>
+                <a href="/admin/password" class="list-group-item"><span class="glyphicon glyphicon-edit"
+                                                                        aria-hidden="true"></span> 修改密码</a>
+            </div>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li><a href="/admin/application/list">讲师申请</a></li>
+                    <li class="active">申请人 个人信息</li>
+                </ol>
+            </div>
+            <div class="row" th:object="${applicant}">
+                <div class="col-md-2">
+                    <!--空格作用-->
+                </div>
+                <div class="col-md-7">
+                    账号：<span th:text="*{username}" id="username">1315387303@qq.com</span><br/><br/>
+                    真实姓名：<span th:text="*{name}" id="name">钟红建</span><br/><br/>
+                    性别：<span th:text="*{sex}" id="sex">男</span><br/><br/>
+                    手机号：<span th:text="*{phoneNum}" id="phoneNum">男</span><br/><br/>
+                    个人简介：
+                    <p style="margin-left: 70px;margin-top: -20px" th:text="*{profile}" id="profile">我若不是我，谁又会是我？</p>
+                </div>
+                <div class="col-md-3">
+                    <form method="post" th:action="@{/admin/application/review-process}">
+                        <input type="hidden" name="id" th:value="*{id}">
+                        <input type="submit" value="通过">
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div><!--container-->
+
+</body>
+</html>

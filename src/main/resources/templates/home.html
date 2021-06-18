@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:fragment="common_head">
+    <meta charset="UTF-8">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <link type="text/css" rel="styleSheet" href="/css/bootstrap-fileinput.css"/>
+    <link type="text/css" rel="styleSheet" href="/css/home.css"/>
+    <link type="text/css" rel="styleSheet" href="/css/comment.css"/>
+    <link href="/css/video-js.min.css" rel="stylesheet">
+    <link type="text/css" rel="styleSheet" href="/css/evaluation.css"/>
+    <link type="text/css" rel="styleSheet" href="/css/scrolltop.css"/>
+    <link type="text/css" rel="styleSheet" href="/css/sliderx.css"/>
+    <link rel="stylesheet" href="/css/lq-score.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.7.0.css">
+    <link rel="stylesheet" href="/css/questions.css">
+
+
+    <script type="text/javascript" src="/js/home.js"></script>
+    <!--<script type="text/javascript" src="/js/evaluation.js"></script>-->
+    <script type="text/javascript" src="/js/jquery-validate.js"></script>
+    <script type="text/javascript" src="/js/sliderx.js"></script>
+    <script src="/js/lq-score.js"></script>
+    <script src="/js/bootstrap-fileinput.js"></script>
+
+
+    <style>
+        .courseProfile {
+            transition: all ease 0.2s; /*设置过渡效果*/
+        }
+
+        .courseProfile:hover {
+            -webkit-box-shadow: #666 0px 0px 8px;
+            -moz-box-shadow: #666 0px 0px 8px;
+            box-shadow: #666 0px 0px 8px;
+            background: rgb(255, 255, 255);
+        }
+        .span-mark{
+            color: red;
+        }
+
+    </style>
+    <title>智学讲师平台</title>
+</head>
+
+<body>
+
+<nav th:fragment="common_nav" id="common-nav" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+                <span>智学讲师平台</span>
+                <!--<img class="navbar-logo" src="/images/logo.png" height="35px" width="90px" alt="navbar-logo">-->
+            </a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-left">
+                <li>
+                    <a href="/index">首页</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="true">课程分类 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <div id="category" style="width: 500px; text-align: center;">
+                        </div>
+                    </ul>
+                </li>
+                <li>
+                    <a target="_blank" href="/application/fillView">讲师申请</a>
+                </li>
+                <li>
+                    <a target="_blank" href="/teachers">
+                        <span class="hidden-sm">名师团</span>
+                        <span class="nav-icon visible-sm"><i class="fa fa-rss"></i></span>
+                    </a>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-left" action="/search" id="cse-search-box">
+                <div class="form-group">
+                    <input type="search" name="courseKey" class="form-control input-sm" placeholder="Search">
+                    <button type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索
+                    </button>
+                </div>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li sec:authorize="isAuthenticated()"><a th:href="@{/student/info/messages}"><span
+                        class="glyphicon glyphicon-bell" aria-hidden="true"><span id="badge"
+                                                                                  class="badge">14</span></span></a>
+                </li>
+                <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}"> 登录/注册</a></li>
+                <li sec:authorize="isAuthenticated()"><a th:href="@{/stu-info-center}"> 个人中心</a></li>
+                <li class="dropdown" sec:authorize="isAuthenticated()">
+                    <img class="img-circle dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1"
+                         style="width: 38px; height: 38px; margin-top: 5px;"
+                         th:src="${student.imageSite}" alt="默认头像">
+                    <ul class="dropdown-menu" id="dropDownCur" style="margin-top: 9px;">
+                        <li><a th:href="@{/student/course/list}">我的课程</a></li>
+                        <li><a th:href="@{/student/info}">个人信息</a></li>
+                        <li><a th:href="@{/logout}"> 退出登录</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div id="left-nav">
+    <a href="#part1" style="text-decoration: none">
+        <div title="推荐课程" class="part">推荐课程</div>
+    </a>
+    <a href="#part2" style="text-decoration: none">
+        <div title="新上课程" class="part">新上课程</div>
+    </a>
+    <a href="#part3" style="text-decoration: none">
+        <div title="热门课程" class="part">热门课程</div>
+    </a>
+    <a href="#part4" style="text-decoration: none">
+        <div title="评价最高" class="part">评价最高</div>
+    </a>
+    <a href="#part5" style="text-decoration: none">
+        <div title="名师专栏" class="part">名师专栏</div>
+    </a>
+</div>
+
+<div class="container" id="main">
+    <div class="row" style="margin-top: 5%;">
+        <div class="col-md-2">
+            <div style="margin: 5px 5px 5px -15px; background-color: rgb(255, 255, 255); height: 400px; padding: 15px 3px 10px 15px; ">
+                <div style="width:100%; text-align: center; margin-bottom: 10px;">每周课程排行</div><!--每周参加课程人数最多-->
+                <div th:each="week_course,week_courseState : ${week_courses}">
+                    <label th:text="${week_courseState.index + 1}"></label>
+                    <a th:text="${week_course.name}" th:href="@{'/student/course/view?id='+${week_course.id}}"
+                       style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></a>
+                </div>
+            </div>
+        </div>
+        <!--幻灯片放映-->
+        <div id="carousel-example-generic" class="carousel slide col-md-8" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item active" th:onclick="courseClick([[${week_courses.get(0).id}]]);">
+                    <img th:src="${week_courses.get(0).imageSite}" alt="...">
+                    <div class="carousel-caption">
+                        <span th:text="${week_courses.get(0).name}">推荐课程</span>
+                    </div>
+                </div>
+                <div class="item" th:onclick="courseClick([[${week_courses.get(1).id}]]);">
+                    <img th:src="${week_courses.get(1).imageSite}" alt="...">
+                    <div class="carousel-caption">
+                        <span th:text="${week_courses.get(1).name}">推荐课程</span>
+                    </div>
+                </div>
+                <div class="item" th:onclick="courseClick([[${week_courses.get(2).id}]]);">
+                    <img th:src="${week_courses.get(2).imageSite}" alt="...">
+                    <div class="carousel-caption">
+                        <span th:text="${week_courses.get(2).name}">推荐课程</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+
+        <div class="col-md-2">
+            <div style="margin: 5px -15px 5px 5px; background-color: rgb(255, 255, 255); height: 400px;">
+                <div sec:authorize="!isAuthenticated()"
+                     style="text-align: center; padding-top: 50px; padding-left: 10px; padding-right: 10px;">
+                    <div style="margin-bottom: 30px;">智学讲师平台打造适合于每个学生的专属讲师</div>
+                    <img src="/images/default-person.png" alt="默认头像">
+                    <div class="btn-login"><a style="text-decoration: none" th:href="@{/login}">登录/注册</a></div>
+                </div>
+                <div sec:authorize="isAuthenticated()"
+                     style="text-align: center; padding-top: 50px; padding-left: 10px; padding-right: 10px;">
+                    <div style="margin-bottom: 30px;">智学讲师平台打造适合于每个学生的专属讲师</div>
+                    <img class="img-circle" height="90px" width="90px" th:src="${student.imageSite}" alt="头像">
+                    <div class="btn-login"><a style="text-decoration: none" th:href="@{/student/course/list}">我的课程</a>
+                    </div>
+                </div>
+                <div sec:authorize="isAuthenticated()"
+                     style="text-align: center; padding-top: 50px; padding-left: 10px; padding-right: 10px;">
+                    <div th:each="recentLearnCourse:${recentLearnCourseList}">
+                        <a th:href="@{'/student/course/notice?id='+${recentLearnCourse.courseId}}"
+                           th:text="${recentLearnCourse.courseName}"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a id="part1"></a>
+    <hr>
+    <!--推荐课程-->
+    <div class="page-header">
+        <h3>推荐课程 <small>Subtext for header</small></h3>
+        <div class="row">
+            <div class="courseProfile" style="width: 230px; display: inline-block;"
+                 th:each="courseRanking, courseRankingStat: ${recommendCourseRankingList}">
+                <div class="thumbnail" th:onclick="courseClick([[${courseRanking.course.id}]]);" style="margin: 10px;">
+                    <img th:src="${courseRanking.course.imageSite}" alt="课程缩略图">
+                    <div class="caption">
+                        <h4 th:text="${courseRanking.course.name}">课程标题</h4>
+                        <p th:text="${courseRanking.course.profile}"
+                           style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            课程简介</p>
+                        <!--<p><a href="#" class="btn btn-primary" role="button">Button</a>
+                            <a href="#" class="btn btn-default" role="button">Button</a></p>-->
+                        讲师：<span th:text="${courseRanking.course.lecturer.nickname}"></span><br>
+                        参加人数：<span th:text="${courseRanking.course.courseRanking.num}"></span>
+                        &emsp;&emsp;
+                        <span th:if="${courseRanking.course.money!=0}" class="redTag"
+                              th:text="'￥'+${courseRanking.course.money}"></span>
+                        <span th:if="${courseRanking.course.money==0}" class="greenTag">免费</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a id="part2"></a>
+    </div>
+    <div class="page-header">
+        <h3>新上好课 <small>Subtext for header</small></h3>
+        <div class="row">
+            <div class="courseProfile" style="width: 230px; display: inline-block;"
+                 th:each="course, courseStat: ${courses_newest}">
+                <div class="thumbnail" th:onclick="courseClick([[${course.id}]]);" style="margin: 10px;">
+                    <img th:src="${course.imageSite}" alt="课程缩略图">
+                    <div class="caption">
+                        <h4 th:text="${course.name}">课程标题</h4>
+                        <p th:text="${course.profile}"
+                           style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            课程简介</p>
+                        <!--<p><a href="#" class="btn btn-primary" role="button">Button</a>
+                            <a href="#" class="btn btn-default" role="button">Button</a></p>-->
+                        讲师：<span th:text="${course.lecturer.nickname}"></span><br>
+                        参加人数：<span th:text="${course.courseRanking.num}"></span>
+                        &emsp;&emsp;
+                        <span th:if="${course.money!=0}" class="redTag" th:text="'￥'+${course.money}"></span>
+                        <span th:if="${course.money==0}" class="greenTag">免费</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a id="part3"></a>
+    </div>
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-5">
+                <h3>热门课程 <small class='text-right'>Subtext for header</small></h3>
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-1" style="padding-top: 20px"><a href="/student/category/hottest"
+                                                               style="text-decoration: none;">全部<span
+                    class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a></div>
+        </div>
+        <div class="row">
+            <div class="courseProfile" style="width: 230px; display: inline-block;"
+                 th:each="courseRanking, courseRankingStat: ${courseRankingList_hottest}">
+                <div class="thumbnail" th:onclick="courseClick([[${courseRanking.course.id}]]);" style="margin: 10px;">
+                    <img th:src="${courseRanking.course.imageSite}" alt="课程缩略图">
+                    <div class="caption">
+                        <h4 th:text="${courseRanking.course.name}">课程标题</h4>
+                        <p th:text="${courseRanking.course.profile}"
+                           style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            课程简介</p>
+                        <!--<p><a href="#" class="btn btn-primary" role="button">Button</a>
+                            <a href="#" class="btn btn-default" role="button">Button</a></p>-->
+                        讲师：<span th:text="${courseRanking.course.lecturer.nickname}"></span><br>
+                        参加人数：<span th:text="${courseRanking.num}"></span>
+                        &emsp;&emsp;
+                        <span th:if="${courseRanking.course.money!=0}" class="redTag"
+                              th:text="'￥'+${courseRanking.course.money}"></span>
+                        <span th:if="${courseRanking.course.money==0}" class="greenTag">免费</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a id="part4"></a>
+    </div>
+    <div class="page-header">
+        <h3>评价最高 <small>Subtext for header</small></h3>
+        <div class="row">
+            <div class="courseProfile" style="width: 230px; display: inline-block;"
+                 th:each="courseRanking, courseRankingStat: ${starsCourseRankingList}">
+                <div class="thumbnail" th:onclick="courseClick([[${courseRanking.course.id}]]);" style="margin: 10px;">
+                    <img th:src="${courseRanking.course.imageSite}" alt="课程缩略图">
+                    <div class="caption">
+                        <h4 th:text="${courseRanking.course.name}">课程标题</h4>
+                        <p th:text="${courseRanking.course.profile}"
+                           style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            课程简介</p>
+                        <!--<p><a href="#" class="btn btn-primary" role="button">Button</a>
+                            <a href="#" class="btn btn-default" role="button">Button</a></p>-->
+                        讲师：<span th:text="${courseRanking.course.lecturer.nickname}"></span><br>
+                        评价人数：<span th:text="${courseRanking.evaluationNum}"></span>
+                        &emsp;&emsp;
+                        <span th:if="${courseRanking.course.money!=0}" class="redTag"
+                              th:text="'￥'+${courseRanking.course.money}"></span>
+                        <span th:if="${courseRanking.course.money==0}" class="greenTag">免费</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a id="part5"></a>
+    </div>
+    <div class="page-header">
+        <h3>名师专栏 <small>Subtext for header</small></h3>
+        <div class="row">
+            <div class="control-box">
+                <ul>
+                    <li class="prev">
+                        <img src="/images/left_02.png" alt="prev">
+                    </li>
+                    <li class="next">
+                        <img src="/images/right_02.png" alt="next">
+                    </li>
+                </ul>
+                <div class="bigbox">
+                    <div id="switcher">
+                        <div class="content_1">
+                            <div class="box" th:each="lectFollowView:${lectFollowViewList}"
+                                 th:style=" 'background-image:url('+ ${lectFollowView.lectImageSite}+')'">
+                                <a th:href="@{'/student/lecturer/lect-info?username='+${lectFollowView.lectUsername}}">
+                                    <div class="shadow">
+                                        <span th:text="${lectFollowView.lectNickname}">昵称</span>
+                                        <p class="profile" th:text="${lectFollowView.profile}"></p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="content_2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="tbox"><!--右栏-->
+    <a id="gotop" href="javascript:void(0)"></a>
+    <a id="jianyi" target="_blank" href="/feedback"></a>
+</div>
+<footer class="footer" th:fragment="footer">
+    <img src="/images/icon.png" alt="智学" style="margin-bottom: 5px;">
+    <p>Copyright © 2021 Nchu17204228. All Rights Reserved. contact@123.com</p>
+    <p>南昌航空大学软件学院 版权所有 | 智学课堂服务协议 | 隐私政策 | 站点地图 | <a href="/admin-login">管理员登录</a></p>
+</footer>
+<script type="text/javascript" src="/js/scrolltop.js"></script>
+</body>
+</html>

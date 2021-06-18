@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="teacher/teach_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="teacher/teach_fragment :: common_nav"></div>
+
+<div class="container">
+
+<div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+    <div class="col-md-3">
+        <div class="list-group "><!--列表组-->
+            <a th:href="@{/teacher/course/list}" class="list-group-item"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> 课程管理</a><!--包括 发布新课程、修改课程信息、删除课程-->
+            <a th:href="@{/teacher/teach/list}" class="list-group-item active"><span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 授课系统</a><!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+            <a th:href="@{/teacher/data/list}" class="list-group-item"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 数据中心</a><!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+            <a th:href="@{/teacher/info/messages}" class="list-group-item"><span class="glyphicon glyphicon-bell" aria-hidden="true"></span> 我的消息</a>
+            <a th:href="@{/teacher/account/view}" class="list-group-item"><span class="glyphicon glyphicon-yen" aria-hidden="true"></span> 我的账户</a>
+            <a th:href="@{/teacher/info}" class="list-group-item"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> 个人信息</a>
+            <a th:href="@{/teacher/password}" class="list-group-item"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 修改密码</a>
+        </div>
+    </div>
+    <div class="col-md-9 right-box">
+        <div class="row">
+            <ol class="breadcrumb">
+                <li><a th:href="@{/teacher/teach/list}">授课系统</a></li>
+                <li class="active" th:text="${course.name}"></li>
+                <li class="active">课程共享资料</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+                <div style="line-height:25px;border: 1px  #000000; width: 90%; margin: 0 auto;" th:each="shareDoc:${course.shareDocList}">
+                    <span th:text="${shareDoc.time}"></span><br>
+                    <a target="_blank" th:href="${shareDoc.site}" th:text="${shareDoc.name}"></a>
+                    <a class="btn btn-danger btn-xs" th:href="'/teacher/teach/share/delete?id='+${course.id}+'&&docId='+${shareDoc.id}">删除</a>
+                </div>
+            </div>
+        </div><!-- /.row -->
+        <hr>
+        <div class="row">
+            <div class="col-md-2 text-right">上传进度:</div>
+            <div class="col-md-9">
+                <!--<form method="post" th:action="@{/teacher/teach/doc-add}" enctype="multipart/form-data">
+                    <input type="hidden" name="id" th:value="${course.id}">
+                    <div class="col-md-3">
+                        <label for="file">上传课程资料：</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="file" id="file" name="file" value="选择资料">
+                    </div>
+                    <div class="col-md-5">
+                        &lt;!&ndash;<input type="submit" value="提交">&ndash;&gt;
+                        <button onclick="uploadFile()">上传</button>
+                    </div>
+                </form>-->
+                <progress id="progressBar" value="0" max="100" style="width: 300px;"></progress>
+                <span id="percentage"></span><span id="time"></span>
+                <br><br>
+                <input style="display: inline-block" type="file" id="file" name="file">
+                <input style="display: inline-block" type="button" onclick="UploadFile()" value="上传">
+                <input style="display: inline-block" type="button" onclick="cancelUploadFile()" value="取消">
+            </div>
+        </div><!-- /.row -->
+        <!--<div class="progress">
+            <div></div>
+        </div>-->
+    </div>
+</div>
+
+</div><!--container-->
+<!--<script type="text/javascript" th:inline="javascript">
+    function uploadFile() {
+        //获取上传的文件
+        var uploadFile = $('form').get(0).file[0];
+
+        var formData = new FormData();
+
+        formData.append('file', uploadFile);
+        formData.append('id', [[${course.id}]]);
+        $.ajax({
+            url: '/teacher/teach/doc-add',
+            type: 'post',
+            dataType: 'text',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function(data){
+                alert(data);
+            },
+            xhr: function() {
+                var xhr = new XMLHttpRequest();
+                //使用XMLHttpRequest.upload监听上传过程，注册progress事件，打印回调函数中的event事件
+                xhr.upload.addEventListener('progress', function (e) {
+                    console.log(e);
+                    //loaded代表上传了多少
+                    //total代表总数为多少
+                    var progressRate = (e.loaded / e.total) * 100 + '%';
+                    //通过设置进度条的宽度达到效果
+                    $('.progress > div').css('width', progressRate);
+                }, false);
+                xhr.addEventListener("load", function (e) {
+                    alert("上传成功");
+                }, false);
+                return xhr;
+            }
+
+        })
+    }
+</script>-->
+<script type="text/javascript" th:inline="javascript">
+    var xhr;
+    var ot;//
+    var oloaded;
+    //上传文件方法
+    function UploadFile() {
+        var fileObj = document.getElementById("file").files[0]; // js 获取文件对象
+        var url = "uploadFile"; // 接收上传文件的后台地址
+
+        var form = new FormData(); // FormData 对象
+        form.append("file", fileObj); // 文件对象
+
+        xhr = new XMLHttpRequest();  // XMLHttpRequest 对象
+        xhr.open("post", '/teacher/teach/doc-add?id='+[[${course.id}]], true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
+        xhr.onload = uploadComplete; //请求完成
+        xhr.onerror =  uploadFailed; //请求失败
+        xhr.upload.onprogress = progressFunction;//【上传进度调用方法实现】
+        xhr.upload.onloadstart = function(){//上传开始执行方法
+            ot = new Date().getTime();   //设置上传开始时间
+            oloaded = 0;//设置上传开始时，以上传的文件大小为0
+        };
+        xhr.send(form); //开始上传，发送form数据
+    }
+    //上传进度实现方法，上传过程中会频繁调用该方法
+    function progressFunction(evt) {
+
+        var progressBar = document.getElementById("progressBar");
+        var percentageDiv = document.getElementById("percentage");
+        // event.total是需要传输的总字节，event.loaded是已经传输的字节。如果event.lengthComputable不为真，则event.total等于0
+        if (evt.lengthComputable) {//
+            progressBar.max = evt.total;
+            progressBar.value = evt.loaded;
+            percentageDiv.innerHTML = Math.round(evt.loaded / evt.total * 100) + "%";
+        }
+
+        var time = document.getElementById("time");
+        var nt = new Date().getTime();//获取当前时间
+        var pertime = (nt-ot)/1000; //计算出上次调用该方法时到现在的时间差，单位为s
+        ot = new Date().getTime(); //重新赋值时间，用于下次计算
+
+        var perload = evt.loaded - oloaded; //计算该分段上传的文件大小，单位b
+        oloaded = evt.loaded;//重新赋值已上传文件大小，用以下次计算
+
+        //上传速度计算
+        var speed = perload/pertime;//单位b/s
+        var bspeed = speed;
+        var units = 'b/s';//单位名称
+        if(speed/1024>1){
+            speed = speed/1024;
+            units = 'k/s';
+        }
+        if(speed/1024>1){
+            speed = speed/1024;
+            units = 'M/s';
+        }
+        speed = speed.toFixed(1);
+        //剩余时间
+        var resttime = ((evt.total-evt.loaded)/bspeed).toFixed(1);
+        time.innerHTML = '，速度：'+speed+units+'，剩余时间：'+resttime+'s';
+        if(bspeed===0)
+            time.innerHTML = '上传已取消';
+    }
+    //上传成功响应
+    function uploadComplete(evt) {
+        //服务断接收完文件返回的结果
+        //    alert(evt.target.responseText);
+        alert("上传成功！");
+        location.reload();
+    }
+    //上传失败
+    function uploadFailed(evt) {
+        alert("上传失败！");
+    }
+    //取消上传
+    function cancelUploadFile(){
+        xhr.abort();
+    }
+</script>
+</body>
+</html>

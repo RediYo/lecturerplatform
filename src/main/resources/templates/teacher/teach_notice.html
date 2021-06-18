@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="teacher/teach_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="teacher/teach_fragment :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="list-group "><!--列表组-->
+                <a th:href="@{/teacher/course/list}" class="list-group-item"><span class="glyphicon glyphicon-th-list"
+                                                                                   aria-hidden="true"></span> 课程管理</a>
+                <!--包括 发布新课程、修改课程信息、删除课程-->
+                <a th:href="@{/teacher/teach/list}" class="list-group-item active"><span
+                        class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 授课系统</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/data/list}" class="list-group-item"><span class="glyphicon glyphicon-tasks"
+                                                                                 aria-hidden="true"></span> 数据中心</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/info/messages}" class="list-group-item"><span class="glyphicon glyphicon-bell"
+                                                                                     aria-hidden="true"></span> 我的消息</a>
+                <a th:href="@{/teacher/account/view}" class="list-group-item"><span class="glyphicon glyphicon-yen" aria-hidden="true"></span> 我的账户</a>
+                <a th:href="@{/teacher/info}" class="list-group-item"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a>
+                <a th:href="@{/teacher/password}" class="list-group-item"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a>
+            </div>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li><a th:href="@{/teacher/teach/list}">授课系统</a></li>
+                    <li class="active" th:text="${course.name}"></li>
+                    <li class="active">课程公告</li>
+                </ol>
+            </div>
+            <div class="panel-body" style="max-height: 400px; overflow-y:scroll;"><!--滚动条-->
+                <div style="border: 1px  #000000; width: 90%; margin: 0 auto;" th:each="notice : ${notices}">
+                   <div style="margin-bottom: 5px;">
+                       <span th:text="${notice.datetime}"></span>&emsp;<a th:href="@{'/teacher/teach/notice/delete?id='+${notice.id}+'&&courseId='+${notice.course.id}}" class="btn btn-danger btn-xs">删除</a>
+                   </div>
+                    <pre th:text="${notice.text}"></pre>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                &emsp;&emsp;<label>发布公告：</label>
+            </div>
+            <div class="row">
+                <form method="post" th:action="@{/teacher/teach/notice}" enctype="multipart/form-data">
+                    <input type="hidden" name="id" th:value="${course.id}">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-10">
+                        <div class="row">
+                                <textarea style='resize: none;width: 530px;' cols="30"
+                                          rows="10" name="text"></textarea>
+                        </div>
+                        <div class="row" style="margin-top: 20px;">
+                            <div class="col-md-8"></div>
+                            <button class="btn btn-primary btn-sm" type="submit">发布</button>
+                        </div>
+                    </div>
+                </form>
+            </div><!-- /.row -->
+        </div>
+    </div>
+
+</div><!--container-->
+
+</body>
+</html>

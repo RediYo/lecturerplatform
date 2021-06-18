@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">智学讲师平台</a>
+                <p class="navbar-text">讲师申请</p>
+            </div>
+
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>
+
+<div class="container">
+
+    <div class="row" style="text-align: center;">
+        <h3>欢迎加入智学讲师团，世界因你而精彩！</h3><br/><br/>
+    </div>
+    <div class="row form-body form-horizontal m-t">
+        <form method="post" th:action="@{/application/receive}" th:object="${applicant}">
+            <div class="col-md-12 droppable sortable ui-droppable ui-sortable">
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-2"></div>
+                    <label class="col-sm-2 control-label">用户名：<span class="span-mark">*</span></label>
+                    <div class="col-sm-4"><input type="text" th:field="*{username}" class="form-control form-email" placeholder="请输入用户名（邮箱）"></div>
+                    <div class="col-sm-2 email_hint"></div>
+                </div>
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-2"></div>
+                    <label class="col-sm-2 control-label">密码：<span class="span-mark">*</span></label>
+                    <div class="col-sm-4"><input type="password" th:field="*{password}" class="form-control form-password" placeholder="请输入密码（至少6位）"></div>
+                    <div class="col-sm-2 password_hint"></div>
+                </div>
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-2"></div>
+                    <label class="col-sm-2 control-label">确认密码：<span class="span-mark">*</span></label>
+                    <div class="col-sm-4"><input type="password" class="form-control form-confirm" placeholder="请再次输入密码"></div>
+                    <div class="col-sm-2 confirm_hint"></div>
+                </div>
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-2"></div>
+                    <label class="col-sm-2 control-label">真实姓名：<span class="span-mark">*</span></label>
+                    <div class="col-sm-4"><input type="text" th:field="*{name}" class="form-control form-name" placeholder="请输入你的姓名（不能为空）"></div>
+                    <div class="col-sm-2 name_hint"></div>
+                </div>
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-2"></div>
+                    <label class="col-sm-2 control-label">性别：<span class="span-mark">*</span></label>
+                    <div class="col-sm-4">
+                        <label class="radio-inline"><input type="radio" th:field="*{sex}" value="男" name="rad72615" > 男</label>
+                        <label class="radio-inline"><input type="radio" th:field="*{sex}" name="rad72615"  value="女"> 女</label>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-2"></div>
+                    <label class="col-sm-2 control-label">电话：<span class="span-mark">*</span></label>
+                    <div class="col-sm-4"><input type="text" th:field="*{phoneNum}" class="form-control form-mobile" placeholder="请输入你的电话"></div>
+                    <div class="col-sm-2 mobile_hint"></div>
+                </div>
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-2"></div>
+                    <label class="col-sm-2 control-label">个人简介：<span class="span-mark">*</span></label>
+                    <div class="col-sm-4">
+                        <textarea rows="8" th:field="*{profile}"  onfocus='textAreaChange(this)'
+                                  onkeyup='textAreaChange(this)' onkeydown='textAreaChange(this)' id="profile" style="resize: none" class="form-control form-profile" placeholder="请输入你的简介（不能为空）"></textarea>
+                        <div class='text-right'>
+                            <em style='color:red'>200</em>/<span>200</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 profile_hint"></div>
+                </div>
+                <div class="form-group draggable ui-draggable dropped">
+                    <div class="col-sm-5"></div>
+                    <input id="checkbox-agree" checked type="checkbox"> 我已同意<a style="cursor: pointer" data-toggle="modal" data-target="#myModal">《智学讲师平台讲师申请协议》</a>
+                    <button type="button" id="btn-submit" class="btn btn-primary btn-sm">提交申请</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div><!--container-->
+<br>
+<br>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">智学讲师平台讲师申请协议</h4>
+            </div>
+            <div class="modal-body">
+                <div style="overflow: auto;height: 480px;">
+                    <p>智学讲师平台讲师申请协议</p>
+                    <p>
+                        欢迎使用中国大学MOOC在线课程学习平台（以下简称：“中国大学MOOC”），为保障用户权益，请您在付费之前，详细阅读此用户付费协议（以下简称“本协议”）所有内容，特别是加粗部分。当您点选“【我已经阅读并同意《您付费协议》】”的，即表示您同意并承诺遵守本协议。</p>
+                    <p>
+                        本协议内容包括协议正文、《网易邮箱帐号服务条款》、《中国大学MOOC平台服务协议》、本协议下述明确援引的其他协议、中国大学MOOC已经发布的或将来可能发布的各类规则。所有规则为本协议不可分割的组成部分，与协议正文具有同等法律效力。</p>
+                    <p>第一条 定义</p>
+                    <p>
+                        1、中国大学MOOC是指网易公司“网易云课堂”（在线教育学习平台）与教育部“爱课程网”（国家精品开放课程共享系统）携手推出的在线教育平台，承接教育部国家精品开放课程任务，向大众提供顶尖高校的MOOC课程的平台服务。</p>
+                    <p>2、收费课程是指中国大学MOOC有偿提供给用户的视频、文字、图片等内容。</p>
+                    <p>3、收费证书是指中国大学MOOC向完成指定课程学习并完成课程考核的用户有偿提供的课程证书。</p>
+                    <p>第二条 本协议的修订</p>
+                    <p>中国大学MOOC有权对本协议进行调整或补充，并通过发出公告等合理方式通知您。若您继续使用中国大学MOOC服务的，则视为接受该等调整或补充，亦或您有权终止使用该服务。</p>
+                    <p>第三条 服务规范</p>
+                    <p>1、中国大学MOOC作为收费课程提供方，为您提供课程培训服务，并将根据中国大学MOOC的相关规则为您提供必要的客户服务。</p>
+                    <p>2、中国大学MOOC拥有制定和调整服务收费标准的权利，并有权依照相应的服务收费介绍、订单等向您收取服务费用。</p>
+                    <p>3、除非另有证明，中国大学MOOC储存在其服务器上的数据是您使用中国大学MOOC服务的唯一有效证据。</p>
+                    <p>第四条 用户规则</p>
+                    <p>
+                        1、您可在中国大学MOOC平台上浏览课程内容信息（包括但不限于收费课程信息、收费证书申请信息等），如您希望有偿获得该部分内容或服务，则您需先登录或注册网易邮箱帐号或通过页面提示，选用其他第三方帐号进行登录。如您选用其他第三方帐号进行登录的，您应保证第三方帐号的稳定性、真实性以及可用性，如因第三方帐号原因（如第三方帐号被封号）致使您无法登录中国大学MOOC的，您应与第三方帐号的所属公司联系。您在使用中国大学MOOC服务时登录的帐号是中国大学MOOC确认您身份的唯一依据。</p>
+                    <p>
+                        2、您理解并同意：中国大学MOOC提供有偿内容或服务实行先付款后使用的方式，您及时、足额、合法的支付所需的款项是您使用该等有偿内容或服务的前提。您有权选择使用中国大学MOOC认可的支付方式，您理解并确认支付服务由中国大学MOOC之外具备合法资质的第三方为您提供，该等支付服务的使用条件及规范由您与支付服务提供方确定，与中国大学MOOC认可无关。</p>
+                    <p>3、中国大学MOOC将不对所提供的有偿内容和服务的适用性或满足您特定需求及目的进行任何明示或者默示的担保。请您在购买前确认自身的需求，同时仔细阅读课程详情说明。</p>
+                    <p>
+                        4、您购买课程后7天内非中国大学MOOC技术原因不予退款。中国大学MOOC技术原因是指：由技术故障引发的连续超过24小时课程无法正常观看、视频无法正常播放、PPT/PDF课程无法观看、重复购买课程。如您个人网络原因、观看设备故障、您账号丢失等类原因不属于平台技术故障。用户购买课程超过7天的，一律不予退款。参加特价优惠或促销活动的退款规则以具体活动规则为准。以上规则适用于中国大学MOOC安卓版以及网页版，但是通过IOS版购买的课程不适用前述规则，通过IOS版购买的课程适用苹果公司的退款规则。</p>
+                    <p>5、您了解并同意，中国大学MOOC可能会基于自身原因（包括但不限于：更新课程内容、改进课程安排）不定期的对收费课程进行更新而无需经过您的事先同意。</p>
+                    <p>
+                        6、您知悉并同意，中国大学MOOC针对课程的不同设置，将按照课程需要提供收费证书，每门课程对应的证书申请规则会因中国大学MOOC设置的不同而有不同。因此收费证书的申请规则以及是否支持退款等内容请查看该门课程详情页中的具体规则。您知悉并同意，中国大学MOOC不保证收费证书能够代替任何教育合作伙伴提供的任何课程，或代表授予任何学分或学位认证。</p>
+                    <p>7、您理解并同意，中国大学MOOC发布的收费课程可能对使用的时间、次数等做出一定限制。如超出限制范围，可能影响您继续使用该等课程，您需要再次付费购买。</p>
+                    <p>
+                        8、您知悉并同意，您无权对已购买的课程进行出售、转让、许可或其他方式使除您自己以外的第三方（包括但不限于自然人、法人或其他组织）使用该等课程。若您违反本条规定，则中国大学MOOC有权视情况采取如下措施而无需承担任何责任：</p>
+                    <p>8.1取消您继续使用该课程的权利；</p>
+                    <p>8.2 限制/冻结您的帐号；</p>
+                    <p>8.3 要求您退还其通过出售、转让、许可等其他方式取得的收益；</p>
+                    <p>8.4其他中国大学MOOC可以采取的救济措施。</p>
+                    <p>
+                        9、您应保管好自己的帐号和密码，如因您未保管好自己的帐号和密码而对自己、中国大学MOOC或第三方造成损害的，您将负全部责任。另外，您应对您帐号中的所有活动和事件负全责。您可随时改变帐号和密码。您同意若发现有非法使用您的帐号或出现安全漏洞的情况，立即通告中国大学MOOC，中国大学MOOC将会尽力予以妥善解决。</p>
+                    <p>第六条&nbsp; 其他约定</p>
+                    <p>
+                        1、所有权及知识产权：中国大学MOOC上所有内容，包括但不限于文字、软件、声音、图片、录像、图表、网站架构、网站画面的安排、网页设计、以及有偿内容或服务均由中国大学MOOC或其他权利人依法拥有其知识产权，包括但不限于著作权、商标权、专利权等。非经中国大学MOOC或其他权利人书面同意，您不得擅自使用、修改、复制、传播、改变、散布、发行或发表上述内容。如有违反，您同意承担由此给中国大学MOOC、网易公司或其他权利人造成的一切损失。</p>
+                    <p>2、通知：所有发给您的通知都可通过电子邮件、常规的信件或在网站显著位置公告的方式进行传送。</p>
+                    <p>
+                        3、凡因本协议引起的或与本协议有关的任何争议，均应提交中国国际经济贸易仲裁委员会，按照申请仲裁时该会现行有效的仲裁规则进行仲裁，并由3名仲裁员进行审理。仲裁裁决是终局的，对双方均有约束力。</p>
+                    <p>4、本协议自发布之日起实施，并构成您和中国大学MOOC之间的共识。</p>
+                    <p>5、中国大学MOOC不行使、未能及时行使或者未充分行使本协议或者按照法律规定所享有的权利，不应被视为放弃该权利，也不影响中国大学MOOC在将来行使该权利。</p>
+                    <p>6、如果您对本协议内容有任何疑问，请发送邮件至我们的客服邮箱：[service@icourse163.org]</p>
+                    <p><br></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="home :: footer"></div>
+<script th:inline="javascript">
+
+    $(document).ready(function () {
+        $('input:radio:first').prop('checked', 'checked');//单选框先默认选中
+        if ([[${response}]] != null) {
+            alert([[${response}]]);
+        }
+    });
+
+</script>
+<script type="text/javascript" src="/js/textareaNumControl.js"></script>
+<script type="text/javascript" src="/js/applicationFormValidate.js"></script>
+</body>
+</html>

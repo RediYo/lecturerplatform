@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+<body>
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <ul class="nav nav-pills nav-stacked nav-pills-fit">
+                <li role="presentation"><a th:href="@{/student/course/list}"><span
+                        class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 我的课程</a></li>
+                <li role="presentation"><a th:href="@{/student/lecturer/follow-list}"><span
+                        class="glyphicon glyphicon-heart" aria-hidden="true"></span> 关注讲师</a></li>
+                <li role="presentation" class="active"><a th:href="@{/student/course/collection}"><span
+                        class="glyphicon glyphicon-star" aria-hidden="true"></span> 收藏课程</a></li>
+                <li role="presentation"><a th:href="@{/student/course/news}"><span class="glyphicon glyphicon-time"
+                                                                                   aria-hidden="true"></span> 课程动态</a>
+                </li>
+                <li role="presentation"><a th:href="@{/student/info/messages}"><span class="glyphicon glyphicon-bell"
+                                                                                     aria-hidden="true"></span>
+                    我的消息</a></li>
+                <li role="presentation"><a th:href="@{/student/course/orders}"><span
+                        class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                    我的订单</a></li>
+                <li role="presentation"><a th:href="@{/student/info}"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a></li>
+                <li role="presentation"><a th:href="@{/student/password}"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">收藏课程</li>
+                </ol>
+            </div>
+            <div th:each="course, courseStat: ${courses}">
+                <div class="media">
+                    <div class="media-left">
+                        <a th:href="@{|/student/course/view?id=${course.id}|}">
+                            <img width="144px" height="90px" class="media-object" th:src="${course.imageSite}"
+                                 alt="...">
+                        </a>
+                    </div>
+                    <div class="media-body row">
+                        <div class="col-sm-8">
+                            <a th:href="@{|/student/course/view?id=${course.id}|}">
+                                <h4 class="media-heading" th:text="${course.name}">Media heading</h4>
+                            </a>
+                            <a th:text=" ' 讲师：' +${course.lecturer.nickname}"
+                               th:href="@{|/student/lecturer/info?id=${course.id}|}">讲师</a><br>
+                            <span th:if="${course.money==0}" class="label label-success">免费</span>
+                            <span th:if="${course.money!=0}" class="label label-danger">付费</span>
+                            <div style="margin-top: 5px;"><span class="glyphicon glyphicon-user"
+                                                                aria-hidden="true"></span>
+                                [[${course.courseRanking.num}]]
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div><a th:href="@{|/student/course/collection-cancel?id=${course.id}|}"
+                                    class="btn btn-danger">取消收藏</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <!--<div th:each="course, courseStat: ${courses}">
+                    <div class="media">
+                        <div class="media-left">
+                            <a th:href="@{|/student/course/view?id=${course.id}|}">
+                                <img width="144px" height="90px" class="media-object" th:src="${course.imageSite}"
+                                     alt="...">
+                            </a>
+                        </div>
+                        <div class="media-body row">
+                            <div class="col-sm-8">
+                                <a th:href="@{|/student/course/view?id=${course.id}|}">
+                                    <h4 class="media-heading" th:text="${course.name}">Media heading</h4>
+                                </a>
+                                <a th:text=" ' 讲师：' +${course.lecturer.nickname}"
+                                   th:href="@{|/student/lecturer/info?id=${course.id}|}">讲师</a><br>
+                                <span th:if="${course.money==0}" class="label label-success">免费</span>
+                                <span th:if="${course.money!=0}" class="label label-danger">付费</span>
+                                <div style="margin-top: 5px;"><span class="glyphicon glyphicon-user"
+                                                                    aria-hidden="true"></span>
+                                    [[${course.courseRanking.num}]]
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div><a th:href="@{|/student/course/collection-cancel?id=${course.id}|}"
+                                        class="btn btn-danger">取消收藏</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>-->
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

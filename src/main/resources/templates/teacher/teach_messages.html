@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="teacher/teach_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="teacher/teach_fragment :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="list-group "><!--列表组-->
+                <a th:href="@{/teacher/course/list}" class="list-group-item"><span class="glyphicon glyphicon-th-list"
+                                                                                   aria-hidden="true"></span> 课程管理</a>
+                <!--包括 发布新课程、修改课程信息、删除课程-->
+                <a th:href="@{/teacher/teach/list}" class="list-group-item"><span class="glyphicon glyphicon-blackboard"
+                                                                                  aria-hidden="true"></span> 授课系统</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/data/list}" class="list-group-item"><span class="glyphicon glyphicon-tasks"
+                                                                                 aria-hidden="true"></span> 数据中心</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/info/messages}" class="list-group-item active"><span
+                        class="glyphicon glyphicon-bell" aria-hidden="true"></span> 我的消息</a>
+                <a th:href="@{/teacher/account/view}" class="list-group-item"><span class="glyphicon glyphicon-yen" aria-hidden="true"></span> 我的账户</a>
+                <a th:href="@{/teacher/info}" class="list-group-item"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a>
+                <a th:href="@{/teacher/password}" class="list-group-item"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a>
+            </div>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">消息列表</li>
+                </ol>
+            </div>
+            <h4>未读</h4>
+            <div class="row" th:if="${commentList_unread.size()==0}">
+                <span>暂无</span>
+            </div>
+            <div class="row" th:if="${commentList_unread.size()!=0}">
+                <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+                    <div style="border: 1px  #000000; width: 90%; margin: 0 auto;"
+                         th:each="comment : ${commentList_unread}">
+                        <div class="row">
+                            <a target="_blank"
+                               th:href="@{'/teacher/teach/comment-detail?courseId='+${comment.course.id}+'&&commentId='+${comment.topComment.id}}">
+                                <p class="profile"><span th:text="${comment.createTime}"></span> <span th:text="${comment.nickname}"></span>在<span
+                                        th:text="${comment.course.name}"></span>|<span
+                                        th:text="${comment.topComment.title}"></span>评论区回复了你：<span
+                                        th:text="${comment.content}"></span></p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.row -->
+            <hr>
+            <h4>已读</h4>
+            <div class="row" th:if="${commentList_read.size()==0}">
+                <span>暂无</span>
+            </div>
+            <div class="row" th:if="${commentList_read.size()!=0}">
+                <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+                    <div style="border: 1px  #000000; width: 90%; margin: 0 auto;"
+                         th:each="comment : ${commentList_read}">
+                        <div class="row">
+                            <a target="_blank"
+                               th:href="@{'/teacher/teach/comment-detail?courseId='+${comment.course.id}+'&&commentId='+${comment.topComment.id}}">
+                                <p class="profile"><span th:text="${comment.createTime}"></span> <span th:text="${comment.nickname}"></span>在<span th:text="${comment.course.name}"></span>|<span th:text="${comment.topComment.title}"></span>评论区回复了你：<span th:text="${comment.content}"></span></p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.row -->
+        </div>
+    </div>
+
+</div><!--container-->
+
+</div>
+
+</body>
+</html>

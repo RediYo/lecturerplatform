@@ -1,0 +1,45 @@
+.comment-content{
+    padding: 7px;
+    resize: none;
+    height: 80px;
+    line-height: 1.7em;
+    width: 85%;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+.reply-comment-textarea {
+    width: 85%;
+    outline: none;
+    transition: 1s;
+    border: 1px solid #DDDDDD;
+    -moz-box-shadow: 2px 2px 4px #f5f5f5 inset;
+    -webkit-box-shadow: 2px 2px 4px #f5f5f5 inset;
+    box-shadow: 2px 2px 4px #f5f5f5 inset;
+    padding: 10px;
+    resize: none;
+}
+.reply-btn{
+    height: 29px;
+    line-height: 29px;
+    padding: 0 15px;
+    font-size: 12px;
+    width: auto;
+}
+.btn-green{
+    color: #fff;
+    background-color: #17823b;
+    border-color: #17823b;
+    border-style: solid;
+    border-width: 1px;
+    cursor: pointer;
+    transition: all .3s;
+}
+.reply-comment{
+    padding: 7px;
+    resize: none;
+    height: 80px;
+    line-height: 1.7em;
+    width: 70%;
+    box-sizing: border-box;
+    font-size: 14px;
+}

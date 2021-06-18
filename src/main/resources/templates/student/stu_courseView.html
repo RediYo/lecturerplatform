@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container" style="padding-bottom: 50px">
+
+    <div class="row" style="margin-top: 2%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-4">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li><a href="/">首页</a></li>
+                    <li><a th:href="@{'/student/category?id='+${course.courseCategory.id}}"
+                           th:text="${course.courseCategory.category}"></a></li>
+                    <li class="active" th:text="${course.name}"></li>
+                </ol>
+            </div>
+            <div class="row">
+                <img th:src="${course.imageSite}" alt="课程图片" height="250px" width="400">
+            </div>
+        </div>
+        <div class="col-md-8" style="padding-left: 50px; padding-right: 80px; margin-top: -20px;">
+            <div style="margin: 50px 0 0 10px;">
+                <div>
+                    <h2 style="display: inline-block" th:text="${course.name}">课程名称 </h2>&emsp;
+                    <h3 style="display: inline-block"><span th:if="${course.money==0}"
+                                                            class="label label-success">免费</span><span
+                            th:if="${course.money!=0}" th:text="'价格 ￥'+${course.money}"
+                            class="label label-danger"></span></h3>
+                </div>
+                <a th:text=" ' 讲师：' +${course.lecturer.nickname}" th:href="@{|/student/lecturer/info?id=${course.id}|}">讲师</a>
+                &emsp;
+                <a th:href="@{|/student/course/collect?id=${course.id}|}" th:if="${collectState==0}"> <span
+                        class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> 收藏</a>
+                <a th:href="@{|/student/course/collect-cancel?id=${course.id}|}" th:if="${collectState==1}"> <span
+                        class="glyphicon glyphicon-star" aria-hidden="true"></span> 取消收藏</a>
+            </div>
+            <div class="panel-body">
+                <div>
+                    <div class="panel panel-default ">
+                        <div class="panel-heading">课程简介</div>
+                        <div class="panel-body">
+                            <p th:text="${course.profile}"></p>
+                            <a th:if="${addState==0&&course.enabled==1&&course.money==0}"
+                               th:href="@{|/student/course/add?id=${course.id}|}">加入课程</a>
+                            <a th:if="${addState==0&&course.enabled==1&&course.money!=0}"
+                               th:href="@{|/student/course/pay?id=${course.id}|}">加入课程</a>
+                            <a th:if="${addState==1&&course.enabled==1}"
+                               th:href="@{|/student/course/notice?id=${course.id}|}">已参加，进入课程</a>
+                            <a th:if="${course.enabled==0}" href="#">课程已关闭，等待讲师开放</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#contents" aria-controls="contents" role="tab"
+                                                      data-toggle="tab">课程目录</a>
+            </li>
+            <li role="presentation"><a href="#evaluation" aria-controls="note" role="tab" data-toggle="tab">课程评价</a>
+            </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="contents">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="panel-body" style="max-height: 800px; overflow-y:scroll"><!--滚动条-->
+                            <div style="border: 1px  #000000; width: 90%;">
+                                <div th:each="topTitle,topStatus:${course.topTitleList}">
+                                    <span style="font-size: 20px;" th:text="${topTitle.title}"></span><span
+                                        th:if="${topStatus.index==0}">(可试看）</span><br><br>
+                                    <div th:each="subTitle:${topTitle.subTitleList}"
+                                         style="line-height: 25px;">
+                                        <span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span>&emsp;
+                                        <span th:if="${topStatus.index!=0}" style="font-size: 16px;"
+                                              th:text="${subTitle.title}"></span>
+                                        <!--免费试看第一个视频-->
+                                        <a style="font-size: 16px;" th:if="${topStatus.index==0}" target="_blank"
+                                           th:href="${course.videoSite+topTitle.id+'/'+subTitle.id+'.mp4'}"
+                                           th:text="${subTitle.title}"></a>(<span th:text="${subTitle.duration}"></span>)
+                                    </div>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 aside">
+                        <div>
+                            <div style="text-align: center;"><h4>相关课程推荐</h4></div>
+                            <div class="media" th:each="courseRanking:${courseRankingList}">
+                                <div class="media-left">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <img class="media-object img-rounded" th:src="${courseRanking.course.imageSite}"
+                                             height="40px" width="60px;" alt="课程缩略图">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <h5 class="media-heading" th:text="${courseRanking.name}">Media heading</h5>
+                                    </a>
+                                    ￥[[${courseRanking.course.money}]]&emsp;<span class="glyphicon glyphicon-user"
+                                                                                  aria-hidden="true"></span>
+                                    [[${courseRanking.num}]]
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 50px">
+                            <div style="text-align: center;"><h4>可能喜欢</h4></div>
+                            <div class="media" th:each="recommendCourse:${recommendCourseList}">
+                                <div class="media-left">
+                                    <a th:href="@{'/student/course/view?id='+${recommendCourse.id}}">
+                                        <img class="media-object img-rounded" th:src="${recommendCourse.imageSite}"
+                                             height="40px" width="60px;" alt="课程缩略图">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <a th:href="@{'/student/course/view?id='+${recommendCourse.id}}">
+                                        <h5 class="media-heading" th:text="${recommendCourse.name}">Media heading</h5>
+                                    </a>
+                                    ￥[[${recommendCourse.money}]]&emsp;<span class="glyphicon glyphicon-user"
+                                                                    aria-hidden="true"></span>
+                                    [[${recommendCourse.courseRanking.num}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div role="tabpanel" class="tab-pane" id="evaluation">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="row evaluate">
+                            <div class="col-md-2 evaluation-title">
+                                综合
+                                <br>
+                                评分
+                            </div>
+                            <div class="col-md-2 evaluation-score" th:text="${starsCourseRanking.avg}"></div>
+                            <div class="col-md-3" id="demo4"></div>
+                            <div class="col-md-5 evaluation-title"
+                                 th:text="'（共'+${starsCourseRanking.evaluationNum}+'条评价）'"></div>
+                        </div><!-- /.row -->
+                        <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+                            <div class="row evaluate" th:each="stuCourseEvaluation : ${stuCourseEvaluationList}">
+                                <div class="col-md-2">
+                                    <img th:src="${stuCourseEvaluation.imageSite}" alt="头像" class="img-circle"
+                                         height="40px"
+                                         width="40px">
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="row" style="margin-left: -60px;">
+                                        <div class="col-md-2" th:text="${stuCourseEvaluation.nickname}"></div>
+                                        <div class="col-md-4 starsList"></div>
+                                        <input hidden th:value="${stuCourseEvaluation.evaluationStars}">
+                                    </div>
+                                    <div class="row">
+                                        <div th:text="${stuCourseEvaluation.evaluation}"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8"></div>
+                                        <div class="col-md-4"
+                                             th:text="'发表时间：'+${stuCourseEvaluation.evaluationTime}"></div>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 aside">
+                        <div th:if="${courseRankingList.size()!=0}">
+                            <div style="text-align: center;"><h4>相关课程推荐</h4></div>
+                            <div class="media" th:each="courseRanking:${courseRankingList}">
+                                <div class="media-left">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <img class="media-object img-rounded" th:src="${courseRanking.course.imageSite}"
+                                             height="40px" width="60px;" alt="课程缩略图">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <h5 class="media-heading" th:text="${courseRanking.name}">Media heading</h5>
+                                    </a>
+                                    ￥[[${courseRanking.course.money}]]&emsp;<span class="glyphicon glyphicon-user"
+                                                                                  aria-hidden="true"></span>
+                                    [[${courseRanking.num}]]
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 50px" th:if="${recommendCourseList.size()!=0}">
+                            <div style="text-align: center;"><h4>可能喜欢</h4></div>
+                            <div class="media" th:each="recommendCourse:${recommendCourseList}">
+                                <div class="media-left">
+                                    <a th:href="@{'/student/course/view?id='+${recommendCourse.id}}">
+                                        <img class="media-object img-rounded" th:src="${recommendCourse.imageSite}"
+                                             height="40px" width="60px;" alt="课程缩略图">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <a th:href="@{'/student/course/view?id='+${recommendCourse.id}}">
+                                        <h5 class="media-heading" th:text="${recommendCourse.name}">Media heading</h5>
+                                    </a>
+                                    ￥[[${recommendCourse.money}]]&emsp;<span class="glyphicon glyphicon-user"
+                                                                    aria-hidden="true"></span>
+                                    [[${recommendCourse.courseRanking.num}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div><!--container-->
+<head th:replace="home :: footer"></head>
+<script th:inline="javascript">
+    /*
+    属性参数介绍：
+        $tipEle--------提示元素，请传入jquery对象
+        fontSize-------大小，字符串类型
+        isReScore------是否允许重新评分
+        tips-----------提示，可以是default默认消息，可以传模板字符串，也可以传长度为5的数组
+        zeroTip--------无分数提示，字符串类型
+        score----------分数，小数、整数都可以
+        callBack-------评分回调，会返回分数和插件元素李，例：function(score,ele){}
+        content--------内容
+        defultColor----默认颜色(未选中的颜色)
+        selectColor----选中后的颜色，可以传单个字符串，也可以传长度为5的数组
+    */
+    $(function () {
+
+        //demo4
+
+        $("#demo4").lqScore({
+            $tipEle: $("#tip4"),
+            tips: "default",
+            score: [[${starsCourseRanking.avg}]]
+            //如果需要设置后还能评分，请添加[isReScore:true]属性
+        });
+
+        $(".starsList").each(function () {
+            $(this).lqScore({
+                $tipEle: $("#tip4"),
+                tips: "default",
+                score: $(this).next().val()
+                //如果需要设置后还能评分，请添加[isReScore:true]属性
+            });
+        });
+
+
+    });
+</script>
+</body>
+</html>

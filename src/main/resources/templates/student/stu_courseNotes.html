@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row topStudy">
+        <div class="col-md-5">
+            <h3><a target="_blank" th:href="@{'/student/course/view?id='+${course.id}}" th:text="${course.name}">课程名称</a>
+                <small><a th:href="@{'/student/lecturer/info?id='+${course.id}}" th:text=" ' 讲师：' +${course.lecturer.nickname}">讲师</a></small></h3>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-3" style="padding: 10px;">
+            <!-- Button trigger modal -->
+            <button th:if="${evaluationState==0}" type="button" class="btn" data-toggle="modal" data-target="#myModal">
+                评价课程
+            </button>
+            <span th:if="${evaluationState==1}">已评价</span>
+        </div>
+    </div>
+    <div class="row lp-border-shadow">
+        <div class="col-md-3">
+            <ul class="nav nav-pills nav-stacked nav-pills-fit">
+                <li role="presentation"><a th:href="@{|/student/course/notice?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> 课程公告</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/learn?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-education" aria-hidden="true"></span> 课程学习</a></li>
+                <li role="presentation" class="active"><a th:href="@{|/student/course/notes?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 课堂笔记</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/share?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-book" aria-hidden="true"></span> 课程共享资料</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/comment?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> 问答区</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 right-box" style="padding-left: 30px; padding-right: 30px; margin-top: 0;">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">课堂笔记</li>
+                </ol>
+            </div>
+            <div class="panel-body" style="max-height: 400px; overflow-y:scroll;"><!--滚动条-->
+                <div style="border: 1px  #000000; width: 90%; margin: 0 auto;" th:each="note : ${noteList}">
+                    <b th:text="${note.topTitle.title}"></b> <span th:text="${note.subTitle.title}"></span>&emsp;<button type="button" class="btn btn-xs btn-primary btn-view" data-toggle="modal" data-target="#myModal">查看</button> <button type="button" class="btn btn-xs btn-primary btn-delete">删除</button>
+                    <input type="text" hidden th:value="${note.topTitle.title+' '+note.subTitle.title}">
+                    <p class="profile" th:id="${note.id}" th:text="${note.content}"></p>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+
+<!-- Modal-evaluation-edit -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">课堂笔记</h4>
+            </div>
+            <div class="modal-body">
+                <!--<form method="post" action="/student/course/update/note"  id="modal-form">-->
+                    <div class="form-group">
+                        <label for="modal-content" class="control-label">我的笔记</label>
+                        <textarea class="form-control" id="modal-content" name="evaluation" onfocus='textAreaChange(this)' onkeyup='textAreaChange(this)' onkeydown='textAreaChange(this)' style="resize: none" rows="10"></textarea>
+                        <div class='text-right'>
+                            <em style='color:red'>500</em>/<span>500</span>
+                        </div>
+                    </div>
+                <!--</form>-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/js/textareaNumControl.js"></script>
+<script>
+    $(document).ready(function () {
+
+        var noteId;
+
+        $("#btn-confirm").click(function () {
+            $.ajax({
+                url: "/student/course/update/note",
+                type: "POST",
+                data: {id: noteId,content: $("#modal-content").val()},
+                datatype: "text",
+                // contentType默认的值为：'application/x-www-form-urlencoded; charset=UTF-8，
+                // 而文件上传一个是multipart/form-data，但是请求内容不只是文件上传。所有使用contentType:false
+                success: function (data) {
+                    console.log("提交成功:"+data);
+                    $("#"+noteId).text(data);
+                },
+                error:function (textStatus) {//请求失败后调用的函数
+                    console.log("提交失败")
+                }
+            })
+        })
+
+        $(".btn-view").on("click",function () {
+            let content=$(this).parent().children("p").text();
+            noteId=$(this).parent().children("p").attr("id");
+            console.log(noteId);
+            let title=$(this).parent().children("input").val();
+            console.log(title);
+            console.log(content);
+            $("#modal-content").val(content);
+            $("#myModalLabel").text(title);
+        })
+
+        $(".btn-delete").on("click",function () {
+            noteId=$(this).parent().children("p").attr("id");
+            $.ajax({
+                url: "/student/course/note/delete",
+                type: "GET",
+                data: {id: noteId},
+                datatype: "text",
+                // contentType默认的值为：'application/x-www-form-urlencoded; charset=UTF-8，
+                // 而文件上传一个是multipart/form-data，但是请求内容不只是文件上传。所有使用contentType:false
+                success: function (data) {
+                    $("#"+noteId).parent().remove();
+                    console.log(data);
+                },
+                error:function (textStatus) {//请求失败后调用的函数
+                    console.log("提交失败")
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3" >
+            <ul class="nav nav-pills nav-stacked nav-pills-fit">
+                <li role="presentation"><a th:href="@{/student/course/list}"><span
+                        class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 我的课程</a></li>
+                <li role="presentation" ><a th:href="@{/student/lecturer/follow-list}"><span
+                        class="glyphicon glyphicon-heart"
+                        aria-hidden="true"></span> 关注讲师</a></li>
+                <li role="presentation"><a th:href="@{/student/course/collection}"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                    收藏课程</a></li>
+                <li role="presentation"><a th:href="@{/student/course/news}"><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                    课程动态</a></li>
+                <li role="presentation"><a th:href="@{/student/info/messages}"><span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
+                    我的消息</a></li>
+                <li role="presentation" class="active"><a th:href="@{/student/course/orders}"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                    我的订单</a></li>
+                <li role="presentation"><a th:href="@{/student/info}"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a></li>
+                <li role="presentation"><a th:href="@{/student/password}"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 right-box" style="padding-left: 30px; padding-right: 30px;">
+            <div>
+                <div class="row">
+                    <ol class="breadcrumb">
+                        <li class="active">我的订单</li>
+                    </ol>
+                </div>
+                <div class="row" th:if="${orderList.size()==0}">
+                    <span>暂无</span>
+                </div>
+                <div class="row" th:if="${orderList.size()!=0}">
+                    <table class="table table-hover" style="table-layout:fixed;">
+                        <thead>
+                        <tr>
+                            <th width="10%">订单编号</th>
+                            <th >时间</th>
+                            <th>课程</th>
+                            <th>课程类别</th>
+                            <th width="10%">金额(元)</th>
+                            <th></th><!--查看课程信息-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order, orderStat: ${orderList}">
+                            <th scope="row" th:text="${order.id}">1</th>
+                            <td th:text="${order.createTime}">Time</td>
+                            <td th:text="${order.course.name}">courseName</td>
+                            <td th:text="${order.course.courseCategory.category}">category</td>
+                            <td th:text="${order.course.money}"></td>
+                            <td><a target="_blank" th:href="@{/student/course/view(id=${order.course.id})}">查看课程</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div><!-- /.row -->
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+</body>
+</html>

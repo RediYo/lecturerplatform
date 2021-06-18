@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+    <div class="row topStudy">
+        <div class="col-md-5">
+            <h3><a target="_blank" th:href="@{'/student/course/view?id='+${course.id}}"
+                   th:text="${course.name}">课程名称</a>
+                <small><a th:href="@{'/student/lecturer/info?id='+${course.id}}"
+                          th:text=" ' 讲师：' +${course.lecturer.nickname}">讲师</a></small></h3>
+        </div>
+    </div>
+    <div class="row lp-border-shadow">
+        <div class="col-md-3">
+            <ul class="nav nav-pills nav-stacked nav-pills-fit">
+                <li role="presentation"><a th:href="@{|/student/course/notice?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> 课程公告</a></li>
+                <li role="presentation" class="active"><a th:href="@{|/student/course/learn?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-education" aria-hidden="true"></span> 课程学习</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/notes?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 课堂笔记</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/share?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-book" aria-hidden="true"></span> 课程共享资料</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/comment?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> 问答区</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 right-box" style="padding-left: 30px; padding-right: 30px; margin-top: 0;">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">课程学习</li>
+                </ol>
+            </div>
+            <div th:if="${continueStudy!=null}">
+                <span style="font-weight: bold;font-size: 18px;">上次已学习到 [[${continueStudy.topTitle.title}]] [[${continueStudy.subTitle.title}]]</span>
+                &emsp;<a th:href="@{'/student/course/video-learn?id='+${continueStudy.course.id}+'&&topId='+${continueStudy.topTitle.id}+'&&subId='+${continueStudy.subTitle.id}+'&&videoSite='+${continueStudy.course.videoSite}+${continueStudy.topTitle.id}+'/'+${continueStudy.subTitle.id}+'.mp4'}"
+                    class="btn btn-primary">继续学习</a>
+                <hr>
+            </div>
+            <div class="row" style="width:90%; margin: 0 auto;">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default" th:each="topTitle,topStatus:${course.topTitleList}">
+                        <div class="panel-heading" role="tab" th:id="'heading'+${topStatus.index+1}">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" th:text="${topTitle.title}"
+                                   data-toggle="collapse"
+                                   data-parent="#accordion"
+                                   aria-expanded="false" th:href="'#collapse'+${topStatus.index+1}"
+                                   th:aria-controls="'#collapse'+${topStatus.index+1}">
+                                    Section 2
+                                </a>
+                            </h4>
+                        </div>
+                        <div th:id="'collapse'+${topStatus.index+1}" class="panel-collapse collapse" role="tabpanel"
+                             th:aria-labelledby="'heading'+${topStatus.index+1}">
+                            <div class="panel-body">
+                                <div style="margin-left: 30px; line-height: 25px;"
+                                     th:each="subTitle:${topTitle.subTitleList}">
+                                    <a style="font-size: 17px" target="_blank"
+                                       th:href="@{'/student/course/video-learn?id='+${course.id}+'&&topId='+${topTitle.id}+'&&subId='+${subTitle.id}+'&&videoSite='+${course.videoSite}+${topTitle.id}+'/'+${subTitle.id}+'.mp4'}"
+                                       th:text="${subTitle.title}"></a>(<span th:text="${subTitle.duration}"></span>)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--<div class="row">
+        <div class="panel-body" style="max-height: 600px; overflow-y:scroll">&lt;!&ndash;滚动条&ndash;&gt;
+            <div style="border: 1px  #000000; width: 90%; margin: 0 auto;">
+                <div th:each="topTitle:${course.topTitleList}">
+                   <h4 th:text="${topTitle.title}"></h4>
+                   <div th:each="subTitle:${topTitle.subTitleList}">
+                       <a target="_blank"
+                          th:href="@{'/student/course/video-learn?id='+${course.id}+'&&topId='+${topTitle.id}+'&&subId='+${subTitle.id}+'&&videoSite='+${course.videoSite}+${topTitle.id}+'/'+${subTitle.title}}"
+                          th:text="${subTitle.title}"></a>(<span th:text="${subTitle.duration}"></span>)
+                   </div>
+               </div>
+            </div>
+        </div>
+    </div>-->
+</div><!--container-->
+</body>
+</html>

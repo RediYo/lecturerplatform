@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row" style="margin-top: 5%; padding-left: 20px;  border: 1px solid #ddd; ">
+        <div class="col-md-5">
+            <h3><span th:text="${course.name}">课程名称</span>
+                <small th:text=" ' 讲师：' +${course.lecturer.nickname}">讲师</small></h3>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class="row lp-border-shadow">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-2">
+                    <img class="img-circle" height="60px" width="60px" th:src="${comment.imageSite}" alt="头像">
+                </div>
+                <div class="col-md-10" style="margin-left: -20px;">
+                    <h4 th:text="${comment.title}">标题</h4>
+                    <span th:text="${comment.nickname}">用户名/昵称</span>
+                    <span th:text="${comment.createTime}">时间</span><br>
+                    <span th:text="${comment.content}">内容</span>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <form method="post"
+                          th:action="@{'/student/course/comment-reply?rawReplyId='+${comment.id}+'&&replyId='+${comment.id}+'&&courseId='+${course.id}}">
+                        <textarea  class="reply-comment-textarea" name="content"></textarea>
+                        <input type="submit" class="reply-btn btn-green" value="回复">
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <div th:each="level_comment,level_commentState : ${comments}">
+                <div class="row" style="line-height: 30px;">
+                    <div class="col-md-1">
+                        <img class="img-circle" height="50px" width="50px" th:src="${level_comment.imageSite}" alt="头像">
+                    </div>
+                    <div class="col-md-11">
+                        <span th:text="${level_comment.nickname}">昵称</span><span
+                            th:if="${level_comment.type==1}">(讲师）</span>&emsp;
+                        <span th:text="${level_comment.createTime}">时间</span><br>
+                        <span th:text="${level_comment.content}"></span>
+                        <button class="btn btn-xs" th:id="'btn_reply_first_'+${level_commentState.index}">回复</button>
+                        <div th:id="'reply_first_'+${level_commentState.index}" style="display:none;">
+                            <form method="post"
+                                  th:action="@{'/student/course/comment-reply?rawReplyId='+${comment.id}+'&&replyId='+${level_comment.id}+'&&courseId='+${course.id}}">
+                                <textarea class="reply-comment" name="content"></textarea>
+                                <button class="btn btn-xs" th:id="'btn_cancel_first_'+${level_commentState.index}" type="button">取消</button>
+                                <button class="btn btn-xs" type="submit">回复</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" th:each="commentSecond,commentState : ${level_comment.commentList}">
+                    <div style="padding-left: 50px; padding-top:10px; padding-bottom: 10px; line-height: 30px;">
+                        <div class="row">
+                            <div class="col-md-1">
+                                <img class="img-circle" height="40px" width="40px" th:src="${commentSecond.imageSite}" alt="头像">
+                            </div>
+                            <div class="col-md-11">
+                                <span th:text="${commentSecond.nickname}">用户名</span>
+                                <span th:if="${commentSecond.type==1}">(讲师）</span>回复<span
+                                    th:text="${commentSecond.replyNickname}"></span>&emsp;
+                                <span th:text="${commentSecond.createTime}">时间</span><br>
+                                <span th:text="${commentSecond.content}"></span>
+                                <button class="btn btn-xs btn_reply_second">回复</button>
+                                <div id="reply_second" style="display:none;">
+                                    <form method="post"
+                                          th:action="@{'/student/course/comment-reply?rawReplyId='+${comment.id}+'&&levelCommentId='+${level_comment.id}+'&&replyId='+${commentSecond.id}+'&&courseId='+${course.id}}">
+                                        <textarea class="reply-comment" name="content"></textarea>
+                                        <button class="btn btn-xs btn_cancel_second" type="button">取消</button>
+                                        <button class="btn btn-xs" type="submit">回复</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="col-md-4 aside">
+            <div style="text-align: center;"><h4>相关问题</h4></div>
+            <div style="text-align: center; line-height: 30px; padding-top: 20px; min-height: 200px;">
+                <div th:each="relevant_comment:${relevant_commentList}">
+                    <a th:href="@{'/student/course/comment-detail?courseId='+${course.id}+'&&commentId='+${relevant_comment.id}}" th:text="${relevant_comment.title}"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+
+<script th:inline="javascript">
+    $(document).ready(function () {
+
+        for (let j = 0; j < [[${comments.size()}]]; j++) {
+            $("#btn_reply_first_" + j).click(function () {
+                $("#reply_first_" + j).show();
+            });
+            $("#btn_cancel_first_" + j).click(function () {
+                $("#reply_first_" + j).hide();
+            })
+        }
+
+
+        $(".btn_reply_second").click(function () {
+            $(this).next().show();
+        });
+
+        $(".btn_cancel_second").click(function () {
+            $(this).parent().parent().hide();
+        });
+
+    });
+
+</script>
+</body>
+</html>

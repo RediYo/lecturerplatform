@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+    <div class="row topStudy">
+        <div class="col-md-5">
+            <h3><a target="_blank" th:href="@{'/student/course/view?id='+${course.id}}" th:text="${course.name}">课程名称</a>
+                <small><a th:href="@{'/student/lecturer/info?id='+${course.id}}" th:text=" ' 讲师：' +${course.lecturer.nickname}">讲师</a></small></h3>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-3" style="padding: 10px;">
+            <!-- Button trigger modal -->
+            <button th:if="${evaluationState==0}" type="button" class="btn" data-toggle="modal" data-target="#myModal">
+                评价课程
+            </button>
+            <button th:if="${evaluationState==1}" type="button" class="btn" data-toggle="modal" data-target="#myModal">
+                修改评价
+            </button>
+        </div>
+    </div>
+    <div class="row lp-border-shadow">
+        <div class="col-md-3">
+            <ul class="nav nav-pills nav-stacked nav-pills-fit">
+                <li role="presentation" class="active"><a th:href="@{|/student/course/notice?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> 课程公告</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/learn?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-education" aria-hidden="true"></span> 课程学习</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/notes?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 课堂笔记</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/share?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-book" aria-hidden="true"></span> 课程共享资料</a></li>
+                <li role="presentation"><a th:href="@{|/student/course/comment?id=${course.id}|}"><span
+                        class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> 问答区</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 right-box" style="padding-left: 30px; padding-right: 30px; margin-top: 0;">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">课程公告</li>
+                </ol>
+            </div>
+            <div class="panel-body" style="max-height: 600px; overflow-y:scroll;"><!--滚动条-->
+                <div style="border: 1px  #000000; width: 90%; margin: 0 auto;" th:each="notice : ${notices}">
+                    <span th:text="${notice.datetime}"></span>
+                    <pre th:text="${notice.text}"></pre>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+
+<!-- Modal-evaluation-edit -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">课程评价</h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" th:action="@{|/student/course/evaluate?id=${course.id}|}" id="modal-form">
+                    <!--<div class="form-group">
+                        <label for="modal-content" class="control-label">总评星级</label>
+                        <select name="stars" id="stars">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>-->
+                    <div class="quiz form-group">
+                        <!-- <h3>我要评论</h3>-->
+                        <div class="quiz_content">
+                            <div class="goods-comm">
+                                <div class="goods-comm-stars">
+                                    <span class="star_l">满意度：</span>
+                                    <div id="rate-comm-1" class="rate-comm"></div>
+                                    <input type="hidden" th:value="${evaluationStars}" name="stars" id="StarNum" >
+                                </div>
+                            </div>
+                            <!--<div class="l_text">
+                                <label class="m_flo">内  容：</label>
+                                <textarea name="evaluation" id="evaluation" class="text"></textarea>
+                                <span class="tr">字数限制为5-200个</span>
+                            </div>-->
+                        </div><!--quiz_content end-->
+
+                    </div><!--quiz end-->
+
+                    <div class="form-group">
+                        <label for="modal-content" class="control-label">评价内容</label> <span id="content-hint" style="color: red"></span>
+                        <textarea class="form-control" th:text="${evaluationContent}" style="resize: none" id="modal-content" name="evaluation" onfocus='textAreaChange(this)' onkeyup='textAreaChange(this)' onkeydown='textAreaChange(this)' rows='5'></textarea>
+                        <div class='text-right'>
+                            <em style='color:red'>200</em>/<span>200</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript" src="/js/evaluation.js"></script>
+<script type="text/javascript" src="/js/textareaNumControl.js"></script>
+</body>
+</html>

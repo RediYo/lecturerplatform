@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="home :: common_head"></head>
+<body>
+<div th:replace="home :: common_nav"></div>
+
+<div class="container" style="padding-bottom: 200px">
+    <div class="row" style="margin-top: 2%; padding-top: 50px; ">
+        <ol class="breadcrumb">
+            <li><a href="/">首页</a></li>
+            <li class="active">建议</li>
+        </ol>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-7">
+            <form action="/feedback" method="post">
+                <div>
+                    <h4>意见反馈</h4>
+                    <hr>
+                </div>
+                <div>
+                    <textarea name="content" id="content" style="resize: none" maxlength="500" cols="88" rows="10" onfocus='textAreaChange(this)'
+                              onkeyup='textAreaChange(this)' onkeydown='textAreaChange(this)'
+                              placeholder="请填写具体内容帮助我们了解您的意见与建议。"></textarea>
+                    <div class='text-right'>
+                        <em style='color:red'>200</em>/<span>200</span>
+                    </div>
+                </div>
+                <div>
+                    <label for="input-email">你的邮箱:</label> <input type="text" name="email" style="line-height: 25px;width: 350px;"
+                                                                 id="input-email" placeholder="请留下真实联系方式（邮箱），方便我们答疑解惑！">
+                    <input type="button" id="btn-feedback-submit" class="brn btn-primary btn-sm" value="提交">
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <h5 style="font-weight: bold; text-align: center">常见问题</h5>
+            <div style="text-align: center">
+                <ul>
+                    <li><a target="_blank" href="/questions">忘记登录密码怎么办？</a></li>
+                    <li><a target="_blank" href="/questions">如何发起退款？</a></li>
+                    <li><a target="_blank" href="/questions">退出课程后学习进度会重置吗？</a></li>
+                    <li><a target="_blank" href="/questions">怎么联系我们？</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="home :: footer"></div>
+<script type="text/javascript" src="/js/textareaNumControl.js"></script>
+<script>
+    $(document).ready(function () {
+
+        var contentBoolean = false;
+        var emailBoolean = false;
+
+        $('#content').blur(function () {
+            let len = $(this).val().length;
+            if (len === 0) {
+                contentBoolean = false;
+                $(this).css("border-color","#be3948");
+            } else {
+                contentBoolean = true;
+                $(this).css("border-color","inherit");
+            }
+        });
+        $('#input-email').blur(function () {
+            if ((/[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/).test($(this).val())){
+                emailBoolean = true;
+                $(this).css("border-color","inherit");
+            }else {
+                emailBoolean = false;
+                $(this).css("border-color","#be3948");
+            }
+        });
+
+        $("#btn-feedback-submit").click(function () {
+            if (contentBoolean && emailBoolean) {
+                alert("提交成功！")
+                $("form").submit();
+            } else {
+                console.log(false);
+                alert("输入不能为空或输入格式错误！");
+            }
+
+        });
+    });
+</script>
+</body>
+</html>

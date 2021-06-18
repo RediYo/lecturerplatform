@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="teacher/teach_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="teacher/teach_fragment :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="list-group "><!--列表组-->
+                <a th:href="@{/teacher/course/list}" class="list-group-item active"><span
+                        class="glyphicon glyphicon-th-list" aria-hidden="true"></span> 课程管理</a>
+                <!--包括 发布新课程、修改课程信息、删除课程-->
+                <a th:href="@{/teacher/teach/list}" class="list-group-item"><span class="glyphicon glyphicon-blackboard"
+                                                                                  aria-hidden="true"></span> 授课系统</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/data/list}" class="list-group-item"><span class="glyphicon glyphicon-tasks"
+                                                                                 aria-hidden="true"></span> 数据中心</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/info/messages}" class="list-group-item"><span class="glyphicon glyphicon-bell"
+                                                                                     aria-hidden="true"></span> 我的消息</a>
+                <a th:href="@{/teacher/info}" class="list-group-item"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a>
+                <a th:href="@{/teacher/password}" class="list-group-item"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a>
+            </div>
+        </div>
+
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li><a th:href="@{/teacher/course/list}">课程管理</a></li>
+                    <li class="active">发布新课程</li>
+                </ol>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <!--空格作用-->
+                </div>
+                <div class="col-md-7">
+                    <form method="post" th:action="@{/teacher/course/add}" enctype="multipart/form-data"
+                          th:object="${course}">
+                        <div class="form-group">
+                            <label for="name">课程名: </label>
+                            <input type="text" id="name" th:field="*{name}">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile">课程简介: </label>
+                            <textarea style='resize: none;width: 450px;' name="profile" onfocus='textAreaChange(this)'
+                                      onkeyup='textAreaChange(this)' onkeydown='textAreaChange(this)' id="profile"
+                                      cols="30" rows="10" th:field="*{profile}"></textarea>
+                            <div class='text-right'>
+                                <em style='color:red'>400</em>/<span>400</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile">课程分类: </label>
+                            <select name="categoryId" id="categoryId">
+                                <option th:each="courseCategory : ${categoryList}" th:value="${courseCategory.id}"
+                                        th:text="${courseCategory.category}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="moneyInput">设置课程金额: </label><!--只能为正整数，默认为0-->
+                            <input type="text" th:field="*{money}" size="10" name="money" id="moneyInput"
+                                   th:value="${course.money}">（单位 元）
+                        </div>
+                        <div class="form-group">
+                            <!--<input type="file" value="选择图片" name="file">-->
+                            <label>设置课程封面: </label><!--只能为正整数，默认为0-->
+                            <div id="drop_area">
+
+                            </div>
+                            <input type="file" name="file" style="display: none;">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="btn-submit" class="btn btn-primary btn-sm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+<script type="text/javascript" src="/js/textareaNumControl.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $("#moneyInput").keyup(function () {
+            if (/[^0-9-]+/g.test(this.value)) {
+                this.value = this.value.replace(/[^0-9-]+/g, '');
+            }
+        })
+        $("#moneyInput").blur(function () {
+            if (this.value == '') {
+                this.value = 0;
+            }
+        })
+    })
+    autosize(document.querySelectorAll('textarea'));
+    var dragImgUpload = new DragImgUpload("#drop_area", {
+        callback: function (files) {
+            //回调函数，可以传递给后台等等
+            var file = files[0];
+            console.log(file.name);
+        }
+    })
+
+    var courseNameBoolean = false;
+    var courseProfileBoolean = false;
+
+    $('#name').blur(function () {
+        if ($(this).val().length == 0) {
+            courseNameBoolean = false;
+            $(this).css("border-color", "red");
+        } else {
+            courseNameBoolean = true;
+            $(this).css("border-color", "black");
+        }
+    });
+    $('#profile').blur(function () {
+        if ($(this).val().length == 0) {
+            courseProfileBoolean = false;
+            $(this).css("border-color", "red");
+        } else {
+            courseProfileBoolean = true;
+            $(this).css("border-color", "black");
+        }
+    });
+    // click
+    $('#btn-submit').click(function(){
+        //console.log($("#checkbox-agree").prop("checked"));
+        if(courseNameBoolean&&courseProfileBoolean){
+            alert("添加成功");
+            $("form").submit();
+        }else {
+            alert("请完善信息");
+        }
+    });
+
+
+</script>
+</body>
+</html>

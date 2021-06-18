@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="admin/admin_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="admin/admin_fragment :: common_nav"></div>
+
+<div class="container">
+
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="list-group "><!--列表组-->
+                <a href="/admin/application/list" class="list-group-item"><span class="glyphicon glyphicon-envelope"
+                                                                                aria-hidden="true"></span> 讲师申请</a>
+                <a href="/admin/data/show" class="list-group-item"><span class="glyphicon glyphicon-th-list"
+                                                                         aria-hidden="true"></span> 后台数据</a>
+                <!--<a href="#" class="list-group-item"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> 账号解禁</a>&lt;!&ndash;系统对自动对账号进行查封，用户发起账号申诉&ndash;&gt;-->
+                <a href="/admin/setting" class="list-group-item"><span class="glyphicon glyphicon-cog"
+                                                                       aria-hidden="true"></span> 课程设置</a>
+                <a href="/admin/order/list" class="list-group-item active"><span class="glyphicon glyphicon-euro"
+                                                                                 aria-hidden="true"></span> 订单管理</a>
+                <a href="/admin/feedback/list" class="list-group-item"><span class="glyphicon glyphicon-comment"
+                                                                             aria-hidden="true"></span> 平台反馈</a>
+                <a href="/admin/password" class="list-group-item"><span class="glyphicon glyphicon-edit"
+                                                                        aria-hidden="true"></span> 修改密码</a>
+            </div>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">订单管理</li>
+                </ol>
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <form class="form-inline" method="post" th:action="@{/admin/order/search}">
+                        <div class="form-group">
+                            <label for="order-search">订单搜索：</label>
+                            <input type="text" id="order-search" class="form-control" name="keyword"
+                                   placeholder="请输入订单号">
+                        </div>
+                        <button class="btn btn-default" type="submit">确定</button>
+                    </form>
+                </div><!-- /.col-lg-8 -->
+                <div class="col-lg-4">
+                    订单成交额(元）：[[${total}]]
+                </div>
+            </div>
+            <hr>
+            <div class="row" th:if="${orderList.getSize()==0}">
+                <span>暂无</span>
+            </div>
+            <div class="row" th:if="${orderList.getSize()!=0}">
+                <table class="table table-hover" style="table-layout:fixed;">
+                    <thead>
+                    <tr>
+                        <th width="10%">订单编号</th>
+                        <th>创建时间</th>
+                        <th>课程</th>
+                        <th width="15%">课程类别</th>
+                        <th width="8%">金额</th>
+                        <th>用户账号</th>
+                        <th width="8%"></th><!--查看课程信息-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order, orderStat: ${orderList}">
+                        <th scope="row" th:text="${order.id}">1</th>
+                        <td th:text="${order.createTime}">Time</td>
+                        <td th:text="${order.course.name}">courseName</td>
+                        <td th:text="${order.course.courseCategory.category}">category</td>
+                        <td th:text="${order.course.money}"></td>
+                        <td th:text="${order.student.username}"></td>
+                        <td><a th:href="'/admin/order/refund?orderId='+${order.id}" onclick="return confirm('确定退款？')" type="button" class="btn btn-primary btn-sm">退款</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div><!-- /.row -->
+            <div class="row">
+                <nav aria-label="...">
+                    <ul class="pagination pull-right no-margin">
+
+                        <!-- 首页 -->
+                        <li>
+                            <a th:href="'/admin/order/list?pageNum=0'">首页</a>
+                        </li>
+
+                        <!-- 上一页 -->
+                        <li th:if="${orderList.hasPrevious()}">
+                            <a th:href="'/admin/order/list?pageNum=' + ${orderList.previousPageable().getPageNumber()}" th:text="上一页"></a>
+                        </li>
+
+                        <!-- 中间页 -->
+                        <li th:if="${orderList.getTotalPages()!=0}" th:each="pageNum:${#numbers.sequence(0, orderList.getTotalPages() - 1)}">
+                            <a th:href="'/admin/order/list?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum ne orderList.pageable.getPageNumber()}"></a>
+                            <a th:href="'/admin/order/list?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum eq orderList.pageable.getPageNumber()}" th:style="'font-weight:bold;background: #6faed9;'"></a>
+                        </li>
+                        <li th:if="${orderList.getTotalPages()==0}" th:each="pageNum:${#numbers.sequence(0, orderList.getTotalPages())}">
+                            <a th:href="'/admin/order/list?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum ne orderList.pageable.getPageNumber()}"></a>
+                            <a th:href="'/admin/order/list?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum eq orderList.pageable.getPageNumber()}" th:style="'font-weight:bold;background: #6faed9;'"></a>
+                        </li>
+
+                        <!-- 下一页 -->
+                        <li th:if="${orderList.hasNext()}">
+                            <a th:href="'/admin/order/list?pageNum=' + ${orderList.nextPageable().getPageNumber()}" th:text="下一页"></a>
+                        </li>
+
+                        <!-- 尾页 -->
+                        <li>
+                            <a th:if="${orderList.getTotalPages()!=0}" th:href="'/admin/order/list?pageNum=' + ${orderList.getTotalPages() - 1}">尾页</a>
+                            <a th:if="${orderList.getTotalPages()==0}" th:href="'/admin/order/list?pageNum=' + ${orderList.getTotalPages()}">尾页</a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+</body>
+</html>

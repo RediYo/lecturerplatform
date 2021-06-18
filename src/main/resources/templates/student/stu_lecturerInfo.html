@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+<div th:replace="home :: common_nav"></div>
+<div class="row" style="padding-top: 50px; padding-bottom: 50px; margin: 5% 0 50px;background-color: #5c7ba3;">
+    <div class="col-md-2"></div>
+    <div class="col-md-2">
+        <div class="row"><img class="img-circle" height="140px" width="140px" th:src="${lecturer.imageSite}"
+                              alt="头像"></div>
+        <div class="row" style="margin-top: 10px; margin-left: 20px;">
+            <a th:if="${followState}" class="btn btn-primary" role="button"
+               th:href="@{|/student/lecturer/follow-process?username=${lecturer.username}|}">取消关注</a>
+            <a th:if="${!followState}" class="btn btn-primary" role="button"
+               th:href="@{|/student/lecturer/follow-process?username=${lecturer.username}|}">+ 关注</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div><h3 style="color: white" th:text="'讲师 '+${lecturer.nickname}"></h3></div>
+        <div><h4 style="color: white" th:text="'粉丝 '+${followNum}+'人'"></h4></div>
+        <div><span style="color: white" th:text="${lecturer.profile}"></span></div>
+    </div>
+</div>
+<div class="container" style="margin-bottom: 200px;">
+
+    <div class="row">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">主讲课程</a>
+            </li>
+            <li role="presentation"><a href="#news" aria-controls="news" role="tab" data-toggle="tab">课程动态</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="home">
+                <div class="courseProfile" style="width: 230px; display: inline-block;"
+                     th:each="course, courseStat: ${courses}">
+                    <div class="thumbnail" th:onclick="courseClick([[${course.id}]]);" style="margin: 10px;">
+                        <img th:src="${course.imageSite}" alt="课程缩略图">
+                        <div class="caption">
+                            <h4 th:text="${course.name}">课程标题</h4>
+                            <p th:text="${course.profile}"
+                               style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                课程简介</p>
+                            参加人数：<span th:text="${course.courseRanking.num}"></span>
+                            &emsp;&emsp;
+                            <span th:if="${course.money!=0}" class="redTag" th:text="'￥'+${course.money}"></span>
+                            <span th:if="${course.money==0}" class="greenTag">免费</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="news" style="padding: 20px 10px;">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="media" th:each="lectCourseNews, lectCourseNewsStat: ${lectCourseNewsList}">
+                            <h4>开课啦！[[${lectCourseNews.datetime}]]</h4>
+                            <div class="media-left">
+                                <a th:href="'/student/course/view?id='+${lectCourseNews.courseId}">
+                                    <img width="220px" height="130px;" class="media-object"
+                                         th:src="${lectCourseNews.imageSite}" alt="课程缩略图">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <a th:href="'/student/course/view?id='+${lectCourseNews.courseId}">
+                                    <h4 th:text="${lectCourseNews.courseName}" class="media-heading">Media heading</h4>
+                                </a>
+                                <span th:if="${lectCourseNews.money==0}" class="label label-success">免费</span>
+                                <span th:if="${lectCourseNews.money!=0}" class="label label-danger">付费</span><br>
+                                <span>简介：</span>
+                                <p class="profile-3" th:text="${lectCourseNews.courseProfile}"></p>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="col-md-3 aside">
+                        <div th:if="${starsCourseRankingList.size()!=0}">
+                            <div style="text-align: center;"><h4>高评分推荐</h4></div><!--该讲师的高评分课程-->
+                            <div class="media" th:each="courseRanking:${starsCourseRankingList}">
+                                <div class="media-left">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <img class="media-object img-rounded" th:src="${courseRanking.course.imageSite}"
+                                             height="40px" width="60px;" alt="课程缩略图">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <h5 class="media-heading" th:text="${courseRanking.course.name}">Media
+                                            heading</h5>
+                                    </a>
+                                    ￥[[${courseRanking.course.money}]]&emsp;<span class="glyphicon glyphicon-star" aria-hidden="true"></span> [[${courseRanking.avg}]]
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 50px" th:if="${courseRankingList.size()!=0}">
+                            <div style="text-align: center;"><h4>热门推荐</h4></div><!--该讲师的热门课程-->
+                            <div class="media" th:each="courseRanking:${courseRankingList}">
+                                <div class="media-left">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <img class="media-object img-rounded" th:src="${courseRanking.course.imageSite}"
+                                             height="40px" width="60px;" alt="课程缩略图">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                                        <h5 class="media-heading" th:text="${courseRanking.name}">Media heading</h5>
+                                    </a>
+                                    ￥[[${courseRanking.course.money}]]&emsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span> [[${courseRanking.num}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<head th:replace="home :: footer"></head>
+</html>

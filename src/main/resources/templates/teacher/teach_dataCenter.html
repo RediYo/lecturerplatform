@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="teacher/teach_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="teacher/teach_fragment :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="row row-remove-margin">
+                <div class="list-group"><!--列表组-->
+                    <a th:href="@{/teacher/course/list}" class="list-group-item"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> 课程管理</a><!--包括 发布新课程、修改课程信息、删除课程-->
+                    <a th:href="@{/teacher/teach/list}" class="list-group-item"><span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 授课系统</a><!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                    <a th:href="@{/teacher/data/list}" class="list-group-item active"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 数据中心</a><!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                    <a th:href="@{/teacher/info/messages}" class="list-group-item"><span class="glyphicon glyphicon-bell" aria-hidden="true"></span> 我的消息</a>
+                    <a th:href="@{/teacher/account/view}" class="list-group-item"><span class="glyphicon glyphicon-yen" aria-hidden="true"></span> 我的账户</a>
+                    <a th:href="@{/teacher/info}" class="list-group-item"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> 个人信息</a>
+                    <a th:href="@{/teacher/password}" class="list-group-item"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 修改密码</a>
+                </div>
+            </div>
+            <div class="row row-remove-margin left-box" style="padding: 10px 10px; line-height: 20px;">
+                <div style="margin-bottom: 20px;">基本数据：</div>
+                <ul>
+                    <li>粉丝数量：[[${followNum}]]</li>
+                    <li>课程数量：[[${courseNum}]]</li>
+                    <li>订单数量：[[${orderNum}]]</li>
+                </ul>
+            </div>
+            <div class="row row-remove-margin left-box" style="padding: 10px 10px; line-height: 20px;">
+                <div style="margin-bottom: 20px;">搜索词排行：</div>
+                <div>
+                    <ul>
+                        <li th:each="searchKeyRanking:${searchKeyRankingList}" th:text="${searchKeyRanking.searchKey}"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <div class="col-lg-6">
+                    <form method="post" th:action="@{/teacher/data/search}">
+                        <label for="course-search">课程搜索（名称）：</label>
+                        <select name="categoryId" id="categorySelect">
+                            <option value="0">默认</option>
+                        </select>
+                        <div class="input-group">
+                            <input type="text" id="course-search" class="form-control" name="keyword" placeholder="请输入关键词">
+                            <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">确定</button>
+                        </span>
+                        </div><!-- /input-group -->
+                    </form>
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <table class="table table-hover" style="table-layout:fixed;">
+                <thead>
+                <tr>
+                    <th width="5%">#</th>
+                    <th width="25%">课程名称</th>
+                    <th width="25%">课程类别</th>
+                    <th width="10%">金额(元)</th>
+                    <th width="10%">订单总数</th>
+                    <th width="10%">学习人数</th>
+                    <th width="15%">动态数据</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="course, courseStat: ${courses}">
+                    <th scope="row" th:text="${courseStat.index + 1}">1</th>
+                    <td th:text="${course.name}" th:title="${course.name}"
+                        style="white-space:nowrap; text-overflow: ellipsis; overflow: hidden;">name
+                    </td>
+                    <td th:text="${course.courseCategory.category}" style="white-space:nowrap; text-overflow: ellipsis; overflow: hidden;">
+                        category
+                    </td>
+                    <td th:text="${course.money}">money</td>
+                    <td th:text="${course.orderList.size()}">size</td>
+                    <td th:text="${course.courseRanking.num}">num</td>
+                    <td>
+                        <button type="button" class="btn btn-xs data-view" data-toggle="modal"  th:attr="data-id=${course.id}" data-target="#myModal">查看</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <nav aria-label="...">
+                <ul class="pagination pull-right no-margin">
+
+                    <!-- 首页 -->
+                    <li>
+                        <a th:href="'/teacher/data/list?pageNum=0'">首页</a>
+                    </li>
+
+                    <!-- 上一页 -->
+                    <li th:if="${courses.hasPrevious()}">
+                        <a th:href="'/teacher/data/list?pageNum=' + ${courses.previousPageable().getPageNumber()}"
+                           th:text="上一页"></a>
+                    </li>
+
+                    <!-- 中间页 -->
+                    <li th:each="pageNum:${#numbers.sequence(0, courses.getTotalPages() - 1)}">
+                        <a th:href="'/teacher/data/list?pageNum=' + ${pageNum}" th:text="${pageNum + 1}"
+                           th:if="${pageNum ne courses.pageable.getPageNumber()}"></a>
+                        <a th:href="'/teacher/data/list?pageNum=' + ${pageNum}" th:text="${pageNum + 1}"
+                           th:if="${pageNum eq courses.pageable.getPageNumber()}"
+                           th:style="'font-weight:bold;background: #6faed9;'"></a>
+                    </li>
+
+                    <!-- 下一页 -->
+                    <li th:if="${courses.hasNext()}">
+                        <a th:href="'/teacher/data/list?pageNum=' + ${courses.nextPageable().getPageNumber()}"
+                           th:text="下一页"></a>
+                    </li>
+
+                    <!-- 尾页 -->
+                    <li>
+                        <a th:href="'/teacher/data/list?pageNum=' + ${courses.getTotalPages() - 1}">尾页</a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div><!--container-->
+<!-- Modal-course-day-data -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">动态表</h4>
+            </div>
+            <div class="modal-body">
+                <div id="DayChart" style="width: 600px;height:400px;">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+
+    $(document).ready(function () {
+
+        $.ajax({
+            url: "/teacher/course/category",
+            type: "GET",
+            datatype: "json",/*返回的就是一个json对象*/
+            success: function (data) {
+                let dataObj = data;
+                $(dataObj).each(function () {
+                    $("#categorySelect").append("<option value='"+this.categoryId+"'>"+this.category+"</option>")
+                })
+                $("#categorySelect").val([[${categoryId}]]);
+            },
+
+        });
+
+        // 基于准备好的dom，初始化echarts实例
+        var Chart = echarts.init(document.getElementById('DayChart'));
+
+        // 显示标题，图例和空的坐标轴
+        Chart.setOption({
+            title: {
+                text: '课程日数据'
+            },
+            tooltip: {},
+            legend: {
+                data:['参加人数']
+            },
+            xAxis: {
+                data: []
+            },
+            yAxis: {},
+            series: [{
+                name: '参加人数',
+                type: 'line',
+                data: []
+            }]
+        });
+
+
+        $(".data-view").click(function () {
+            $.ajax({
+                url: "/teacher/data/view",
+                type: "GET",
+                data: {id:$(this).attr('data-id')},
+                datatype: "json",/*返回的就是一个json对象*/
+                success: function (data) {
+                    Chart.setOption({
+                        xAxis: {
+                            data: data.dates
+                        },
+                        series: [{
+                            // 根据名字对应到相应的系列
+                            name: '参加人数',
+                            data: data.nums
+                        }]
+                    });
+                }
+            });
+        });
+
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+<div th:replace="home :: common_nav"></div>
+
+<div class="container" style="padding-bottom: 100px">
+
+    <div class="row" style="margin-top: 5%; padding-top: 40px; ">
+        <div class="col-md-6">
+            共<span th:text="${courseList.getTotalElements()}"></span>条相关结果
+        </div>
+        <div class="col-md-6"></div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default " th:each="course, courseStat: ${courseList}">
+                <div class="panel-heading"><a th:text="${course.name}"
+                                              th:href="@{|/student/course/view?id=${course.id}|}"
+                                              target="_blank">课程名称</a></div>
+                <div class="panel-body">
+                    <div class="col-md-4" style="height: 120px">
+                        <a th:href="@{|/student/course/view?id=${course.id}|}" target="_blank"><img
+                                th:src="${course.imageSite}" style="width: 100%; height: 100%;" alt="缩略图"/></a>
+                    </div>
+                    <div class="col-md-8">
+                        讲师：<span th:text="${course.lecturer.nickname}"></span>
+                        <p class="profile-3" th:text="${course.profile}"></p>
+                        参加人数：<span th:text="${course.courseRanking.num}"></span>
+                        &emsp;&emsp;
+                        <span th:if="${course.money!=0}" class="redTag" th:text="'￥'+${course.money}"></span>
+                        <span th:if="${course.money==0}" class="greenTag">免费</span>
+                    </div>
+                </div>
+            </div>
+            <nav aria-label="...">
+                <ul class="pagination pull-right no-margin">
+
+                    <!-- 首页 -->
+                    <li>
+                        <a th:href="'/search?courseKey='+${courseKey}+'&&pageNum=0'">首页</a>
+                    </li>
+
+                    <!-- 上一页 -->
+                    <li th:if="${courseList.hasPrevious()}">
+                        <a th:href="'/search?courseKey='+${courseKey}+'&&pageNum=' + ${courseList.previousPageable().getPageNumber()}"
+                           th:text="上一页"></a>
+                    </li>
+
+                    <!-- 中间页 -->
+                    <li th:each="pageNum:${#numbers.sequence(0, courseList.getTotalPages() - 1)}">
+                        <a th:href="'/search?courseKey='+${courseKey}+'&&pageNum=' + ${pageNum}" th:text="${pageNum + 1}"
+                           th:if="${pageNum ne courseList.pageable.getPageNumber()}"></a>
+                        <a th:href="'/search?courseKey='+${courseKey}+'&&pageNum=' + ${pageNum}" th:text="${pageNum + 1}"
+                           th:if="${pageNum eq courseList.pageable.getPageNumber()}"
+                           th:style="'font-weight:bold;background: #6faed9;'"></a>
+                    </li>
+
+                    <!-- 下一页 -->
+                    <li th:if="${courseList.hasNext()}">
+                        <a th:href="'/search?courseKey='+${courseKey}+'&&pageNum=' + ${courseList.nextPageable().getPageNumber()}"
+                           th:text="下一页"></a>
+                    </li>
+
+                    <!-- 尾页 -->
+                    <li>
+                        <a th:href="'/search?courseKey='+${courseKey}+'&&pageNum=' + ${courseList.getTotalPages() - 1}">尾页</a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+        <div class="col-md-offset-1 col-md-3 aside" >
+            <div>
+                <div style="text-align: center;"><h4>热搜关键词</h4></div><!--搜索词相关热门课程-->
+                <div>
+                    <span class="label label-info" th:each="searchKeyRanking:${searchKeyRankingList}" th:text="${searchKeyRanking.searchKey}"></span>
+                </div>
+            </div>
+            <div style="margin-top: 50px">
+                <div style="text-align: center;"><h4>相关热门推荐</h4></div><!--搜索词相关热门课程-->
+                <div class="media" th:each="courseRanking:${courseRankingList}">
+                    <div class="media-left">
+                        <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                            <img class="media-object img-rounded" th:src="${courseRanking.course.imageSite}"
+                                 height="40px" width="60px;" alt="课程缩略图">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <a th:href="@{'/student/course/view?id='+${courseRanking.id}}">
+                            <h5 class="media-heading" th:text="${courseRanking.name}">Media heading</h5>
+                        </a>
+                        ￥[[${courseRanking.course.money}]]&emsp;<span class="glyphicon glyphicon-user"
+                                                                      aria-hidden="true"></span>
+                        [[${courseRanking.num}]]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div th:replace="home :: footer"></div>
+</body>
+</html>

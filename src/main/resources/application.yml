@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/lecturer_platform?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 3602990246@qq.com
+    password: oedusfwlnxigcida
+    protocol: smtp
+    default-encoding: utf-8
+    from: 3602990246@qq.com
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.smtp.socketFactory.port: 465
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.smtp.socketFactory.fallback: false
+  thymeleaf:
+    cache: false
+
+server:
+  tomcat:
+    connection-timeout: 10000
+
+

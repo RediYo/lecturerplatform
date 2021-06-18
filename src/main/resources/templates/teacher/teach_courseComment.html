@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="teacher/teach_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="teacher/teach_fragment :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="list-group "><!--列表组-->
+                <a th:href="@{/teacher/course/list}" class="list-group-item"><span class="glyphicon glyphicon-th-list"
+                                                                                   aria-hidden="true"></span> 课程管理</a>
+                <!--包括 发布新课程、修改课程信息、删除课程-->
+                <a th:href="@{/teacher/teach/list}" class="list-group-item active"><span
+                        class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 授课系统</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/data/list}" class="list-group-item"><span class="glyphicon glyphicon-tasks"
+                                                                                 aria-hidden="true"></span> 数据中心</a>
+                <!--包括 课程开启及关闭、上传课程视频、课程资源共享区、问答区-->
+                <a th:href="@{/teacher/info/messages}" class="list-group-item"><span class="glyphicon glyphicon-bell"
+                                                                                     aria-hidden="true"></span> 我的消息</a>
+                <a th:href="@{/teacher/account/view}" class="list-group-item"><span class="glyphicon glyphicon-yen"
+                                                                                    aria-hidden="true"></span> 我的账户</a>
+                <a th:href="@{/teacher/info}" class="list-group-item"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a>
+                <a th:href="@{/teacher/password}" class="list-group-item"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a>
+            </div>
+        </div>
+
+        <div class="col-md-9 right-box" style="padding-left: 30px; padding-right: 30px;">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li><a th:href="@{/teacher/teach/list}">授课系统</a></li>
+                    <li class="active" th:text="${course.name}"></li>
+                    <li class="active">课程答疑</li>
+                </ol>
+            </div>
+            <div>
+                <div class="row">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn" data-toggle="modal" data-target="#myModal">
+                        发布问题
+                    </button>
+                </div><!-- /.row -->
+                <div class="panel-body" style="max-height: 600px; overflow-y:scroll"><!--滚动条-->
+                    <div class="row" style="border: 1px  #000000; width: 90%; margin: 0 auto;"
+                         th:each="comment : ${comments}">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img class="img-circle" height="60px" width="60px" th:src="${comment.imageSite}"
+                                     alt="头像">
+                            </div>
+                            <div class="col-md-8" style="margin-left: -20px;">
+                                <a target="_blank"
+                                   th:href="@{|/teacher/teach/comment-detail?courseId=${course.id}&commentId=${comment.id}|}"><span
+                                        th:text="${comment.title}"></span></a>
+                                &emsp;
+                                <span th:text="${comment.createTime}"></span>&emsp;<a
+                                    th:if="${lecturer.username.equals(comment.username)}"
+                                    th:href="@{'/teacher/teach/delete-comment?commentId='+${comment.id}+'&&courseId='+${course.id}}"
+                                    class="btn btn-primary btn-xs">删除</a>
+                                <br>
+                                <span th:text="${comment.nickname}"></span><span th:if="${comment.type==1}">(讲师）</span>:&emsp;
+                                <p th:text="${comment.content}"
+                                   style="white-space:nowrap; text-overflow: ellipsis; overflow: hidden;"></p>
+                                <!--只显示一行，溢出省略-->
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+
+<!-- Modal-comment-edit -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" th:action="@{/teacher/teach/comment-add}" enctype="multipart/form-data" id="modal-form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">你的问题：</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="modal-title" class="control-label">主题:</label><span style="color: red">*</span>
+                        <input type="hidden" name="courseId" th:value="${course.id}">
+                        <input type="text" size="30" id="modal-title" name="title"> <span id="title-hint" style="color: red"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-content" class="control-label">内容:</label><span style="color: red">*</span> <span id="content-hint" style="color: red"></span>
+                        <textarea class="form-control" id="modal-content"  name="content" onfocus='textAreaChange(this)'
+                                  onkeyup='textAreaChange(this)' onkeydown='textAreaChange(this)' rows="5" style="resize: none;"></textarea>
+                        <div class='text-right'>
+                            <em style='color:red'>200</em>/<span>200</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="btn-comment-confirm">确定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/js/textareaNumControl.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var titleBoolean=false;
+        var contentBoolean=false;
+
+        $('#modal-title').blur(function () {
+            let len=$(this).val().length;
+            if ( len === 0 || len>30) {
+                titleBoolean = false;
+                $("#title-hint").text("昵称不能为空或者超过30个字符！")
+            } else {
+                titleBoolean = true;
+                $("#title-hint").text("");
+            }
+        });
+
+        $('#modal-content').blur(function () {
+            let len=$(this).val().length;
+            if ( len === 0) {
+                contentBoolean = false;
+                $("#content-hint").text("内容不能为空！")
+            } else {
+                contentBoolean = true;
+                $("#content-hint").text("");
+            }
+        });
+
+        $("#btn-comment-confirm").click(function () {
+            let len=$('#modal-title').val().length;
+            titleBoolean = len > 0 && len < 30;
+            contentBoolean = $('#modal-content').val().length > 0;
+
+            if(titleBoolean&&contentBoolean){
+                $("#modal-form").submit();
+            }
+
+        })
+
+    });
+</script>
+
+</body>
+</html>

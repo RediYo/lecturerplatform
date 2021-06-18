@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Document</title>
+  <script type="text/javascript">
+    let second=6;
+    function C(){
+      second-=1;
+      document.getElementById("final").innerHTML=second;
+      if(second===0){
+        window.open("/login","_blank");//打开测试的页面
+        document.getElementById("delay").style.display = "none";
+      }
+    }
+    setInterval("C()",1000);
+  </script>
+</head>
+<body>
+<!-- 可能会被浏览器阻止 允许运行就可以看到效果 -->
+<p id="delay">已发送邮件验证，<span id="final">5</span>秒后自动跳转到登录页面</p>
+</body>
+</html>

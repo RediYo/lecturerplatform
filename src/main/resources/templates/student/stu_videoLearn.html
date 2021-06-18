@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row"
+         style="margin-top: 5%; margin-bottom: 10px; margin-right: -40px; background-color: #f8f8f8; border: 1px solid #ddd;">
+        当前播放：[[${course.name}]] > [[${topTitle.title}]] > [[${subTitle.title}]]
+    </div>
+    <div class="row" style="background-color: #f8f8f8; border: 1px solid #ddd;">
+        <div class="col-md-3">
+            <div class="row">
+                <div class="panel-body" style="max-height: 600px; overflow-y:scroll"><!--滚动条-->
+                    <div style="border: 1px  #000000; width: 100%; margin: 0 auto;">
+                        <div th:each="topTitle:${course.topTitleList}">
+                            <h4 th:title="${topTitle.title}" class="profile-1" th:text="${topTitle.title}"></h4>
+                            <div th:each="subTitle:${topTitle.subTitleList}">
+                                <div>
+                                    <a th:data-current="${subTitle.id}" th:title="${subTitle.title}"
+                                       th:href="@{'/student/course/video-learn?id='+${course.id}+'&&topId='+${topTitle.id}+'&&subId='+${subTitle.id}+'&&videoSite='+${course.videoSite}+${topTitle.id}+'/'+${subTitle.id}+'.mp4'}"
+                                       th:text="${subTitle.title}"></a>(<span th:text="${subTitle.duration}"></span>)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.row -->
+        </div>
+        <div class="col-md-9">
+            <div class="m">
+                <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" width="auto"
+                       height="500px"
+                       poster="/images/m.jpg" data-setup="{}">
+                    <source th:src="${videoSite}" type="video/mp4">
+                    <source th:src="${videoSite}" type="video/webm">
+                    <source th:src="${videoSite}" type="video/ogg">
+                    <p class="vjs-no-js"> To view this video please enable JavaScript, and consider upgrading to a web
+                        browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5
+                            video</a></p>
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#question" aria-controls="question" role="tab"
+                                                      data-toggle="tab">问答</a>
+            </li>
+            <li role="presentation"><a href="#note" aria-controls="note" role="tab" data-toggle="tab">课堂笔记</a>
+            </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="question">
+                <div>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn" data-toggle="modal" data-target="#myModal">
+                        发布问题
+                    </button>
+                </div><!-- /.row -->
+                <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+                    <div class="row" style="border: 1px  #000000; width: 90%; margin: 0 auto;"
+                         th:each="comment : ${comments}">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img class="img-circle" height="60px" width="60px" th:src="${comment.imageSite}"
+                                     alt="头像">
+                            </div>
+                            <div class="col-md-8" style="margin-left: -20px;">
+                                <a target="_blank"
+                                   th:href="@{|/student/course/comment-detail?courseId=${course.id}&commentId=${comment.id}|}">
+                                    <span th:text="${comment.title}"></span>
+                                </a>&emsp;
+                                <span th:text="${comment.createTime}"></span>&emsp;
+                                <input type="text" hidden
+                                       th:value="'/student/course/learn/delete-comment?commentId='+${comment.id}">
+                                <button th:if="${student.username.equals(comment.username)}"
+                                        class="btn btn-primary btn-xs btn-deleteComment">删除
+                                </button>
+                                <br>
+                                <span th:text="${comment.nickname}"></span><span th:if="${comment.type==1}">(讲师）</span>:&emsp;
+                                <p th:text="${comment.content}"
+                                   style="white-space:nowrap; text-overflow: ellipsis; overflow: hidden;"></p>
+                                <!--只显示一行，溢出省略-->
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="note">
+                <div style="padding: 20px 20px;">
+                    <textarea disabled id="tt-note" style="resize: none" name="textarea-note" cols="100"
+                              rows="10"></textarea>
+                    <button type="button" id="btn-edit" class="btn btn-sm btn-primary">编辑</button>
+                    <button style="display: none;" id="btn-complete" type="button" class="btn btn-sm btn-primary">完成
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+
+<!-- Modal-comment-edit -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post"
+                  th:action="@{'/student/course/learn/comment-add?videoSite='+${course.id}+${topTitle.id}+${subTitle.id}}"
+                  enctype="multipart/form-data"
+                  id="modal-form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">你的问题：</h4>
+                </div>
+                <!--<div class="modal-body">
+                    <div class="form-group">
+                        <label for="modal-title" class="control-label">主题: *</label>
+                        <input type="hidden" id="modal-courseId" name="courseId" th:value="${course.id}">
+                        <div class="form_control" style=" width: 80%;">
+                            <input type="text" class="required title" data-tip="请输入主题" data-valid="isNonEmpty"
+                                   data-error="主题不能为空" id="modal-title" name="title" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-content" class="control-label">内容:</label>
+                        <div class="form_control" style=" width: 80%;">
+                            <textarea class="required content" data-tip="请输入内容" data-valid="isNonEmpty"
+                                      data-error="内容不能为空"
+                                      id="modal-content" style="resize: none" name="content"></textarea>
+                        </div>
+                        &lt;!&ndash;<textarea id="modal-content" name="content"></textarea>&ndash;&gt;
+                    </div>
+                </div>-->
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="modal-title" class="control-label">主题:</label><span style="color: red">*</span>
+                        <input type="hidden" id="modal-courseId" name="courseId" th:value="${course.id}">
+                        <input type="text" size="30" id="modal-title" name="title"> <span id="title-hint" style="color: red"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-content" class="control-label">内容:</label><span style="color: red">*</span> <span id="content-hint" style="color: red"></span>
+                        <textarea class="form-control" id="modal-content"  name="content" onfocus='textAreaChange(this)'
+                                  onkeyup='textAreaChange(this)' onkeydown='textAreaChange(this)' rows="5" style="resize: none;"></textarea>
+                        <div class='text-right'>
+                            <em style='color:red'>200</em>/<span>200</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button id="FormSubmitBtn" type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                    <!--button type="button" class="btn btn-primary" id="btn-comment-confirm">确定</button>-->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/js/textareaNumControl.js"></script>
+<script th:inline="javascript">
+    $(document).ready(function () {
+
+        var str = [[${subTitle.id}]];
+        /*$("a:contains(" + str + ")").css("color", "red");*/
+        $("[data-current='"+str+"']").css("color", "red");
+
+        var titleBoolean=false;
+        var contentBoolean=false;
+
+        $('#modal-title').blur(function () {
+            let len=$(this).val().length;
+            if ( len === 0 || len>30) {
+                titleBoolean = false;
+                $("#title-hint").text("昵称不能为空或者超过30个字符！")
+            } else {
+                titleBoolean = true;
+                $("#title-hint").text("");
+            }
+        });
+
+        $('#modal-content').blur(function () {
+            let len=$(this).val().length;
+            if ( len === 0) {
+                contentBoolean = false;
+                $("#content-hint").text("内容不能为空！")
+            } else {
+                contentBoolean = true;
+                $("#content-hint").text("");
+            }
+        });
+
+        /*$("#btn-comment-confirm").click(function () {
+            let len=$('#modal-title').val().length;
+            titleBoolean = len > 0 && len < 30;
+            contentBoolean = $('#modal-content').val().length > 0;
+
+            if(titleBoolean&&contentBoolean){
+                $("#modal-form").submit();
+            }
+
+        })*/
+
+        $("#FormSubmitBtn").click(function () {
+
+            let len=$('#modal-title').val().length;
+            titleBoolean = len === 0 || len > 30;
+            contentBoolean = $('#modal-content').val().length === 0;
+
+            if(titleBoolean||contentBoolean){
+                return false;
+            }
+
+            let courseId = $("#modal-courseId").val();
+            let title = $("#modal-title").val();
+            let content = $("#modal-content").val();
+            console.log(courseId);
+            console.log(title);
+            console.log(content);
+
+            $.ajax({
+                url: "/student/course/learn/comment-add",
+                type: "POST",
+                data: {
+                    courseId: courseId,
+                    title: title,
+                    content: content,
+                    videoSite: [[${course.id}]][[${topTitle.id}]][[${subTitle.id}]]
+                },
+                datatype: 'text',
+                // contentType默认的值为：'application/x-www-form-urlencoded; charset=UTF-8，
+                // 而文件上传一个是multipart/form-data，但是请求内容不只是文件上传。所有使用contentType:false
+                success: function (data) {
+                    console.log("提交成功")
+                    location.reload();
+                },
+                error: function (textStatus) {//请求失败后调用的函数
+                    console.log("提交失败")
+                }
+            })
+        })
+
+        if ([[${note!=null}]]) {
+            $("#tt-note").text([[${note.content}]]);
+        }
+
+        $("#btn-edit").click(function () {
+            $("#tt-note").removeAttr("disabled");
+            $(this).css("display", "none");
+            $("#btn-complete").css("display", "")
+
+        })
+        $("#btn-complete").click(function () {
+            $("#tt-note").attr("disabled", "");
+            $(this).css("display", "none");
+            $("#btn-edit").css("display", "")
+            //更新课程笔记内容
+            $.ajax({
+                url: "/student/course/note?courseId=" + [[${course.id}]] + "&&topId=" + [[${topTitle.id}]] + "&&subId=" + [[${subTitle.id}]],
+                data: {content: $("#tt-note").val()},
+                type: "POST",
+                datatype: "text",/*返回的就是一个json对象*/
+                success: function (data) {
+                    console.log(data);
+                }
+            });
+        })
+        $(".btn-deleteComment").on("click", (function () {
+                let href = $(this).prev().val();
+                let divElem = $(this).parent().parent().parent();
+                $.ajax({
+                    url: href,
+                    type: "GET",
+                    datatype: "text",
+                    success: function (data) {
+                        divElem.remove();
+                        console.log(data);
+                    }
+                });
+            })
+        )
+    })
+</script>
+<script src="/js/video.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+
+    var myPlayer = videojs('my-video', {
+        playbackRates: [0.5, 1, 1.5, 2],
+    });
+
+    videojs("my-video").ready(function () {
+        // myPlayer.poster(d.playpic);
+        /* myPlayer.src({
+             src: path
+         });
+         myPlayer.load({
+             src: path
+         });*/
+
+        //播放
+        myPlayer.play();
+        // 播放 myPlayer.play()
+        // 停止 – video没有stop方法，可以用pause 暂停获得同样的效果
+        // 暂停 myPlayer.pause()
+        // 销毁 myPlayer.dispose()
+        // 监听 myPlayer.on('click',fn)
+        // 触发事件myPlayer.trigger('dispose')
+
+        myPlayer.on('loadstart', function () {
+            console.log('loadstart')
+        });
+        myPlayer.on('loadedmetadata', function () {
+            console.log('loadedmetadata-视频源数据加载完成')
+            //设置上次播放时间lastLearnTime(秒)
+            myPlayer.currentTime([[${continueStudy.continueTime}]]);
+        });
+        myPlayer.on('loadeddata', function () {
+            console.log('loadeddata-渲染播放画面'); //autoPlay必须为false
+        });
+        myPlayer.on('progress', function () {
+            console.log('progress-加载过程')
+        });
+
+
+        //播放时长(秒)
+        var totalTime = 0;
+        // 监听播放进度
+        myPlayer.on('timeupdate', function () {
+            //当前播放时长(秒)
+            var currentTime = Math.floor(myPlayer.currentTime());
+
+            if (currentTime > 0 && currentTime > totalTime && (currentTime % 5 == 0)) {
+                //每隔5秒，向服务器提交播放时间(秒)
+                $.ajax({
+                    url: "/student/course/continueTimeUpdate?courseId=" + [[${course.id}]] + "&&topId=" + [[${topTitle.id}]] + "&&subId=" + [[${subTitle.id}]],
+                    type: "GET",
+                    data: {"currentTime": currentTime},
+                    datatype: "text",
+                    success: function (data) {
+                        console.log(data);
+                    }
+                });
+            }
+            totalTime = currentTime;
+        });
+
+        // 使用事件监听
+        myPlayer.on('ended', function () {
+            videojs.log('播放结束了!');
+        });
+    });
+
+    //设置中文
+    videojs.addLanguage('zh-CN', {
+        "Play": "播放",
+        "Pause": "暂停",
+        "Current Time": "当前时间",
+        "Duration": "时长",
+        "Remaining Time": "剩余时间",
+        "Stream Type": "媒体流类型",
+        "LIVE": "直播",
+        "Loaded": "加载完毕",
+        "Progress": "进度",
+        "Fullscreen": "全屏",
+        "Non-Fullscreen": "退出全屏",
+        "Mute": "静音",
+        "Unmute": "取消静音",
+        "Playback Rate": "播放速度",
+        "Subtitles": "字幕",
+        "subtitles off": "关闭字幕",
+        "Captions": "内嵌字幕",
+        "captions off": "关闭内嵌字幕",
+        "Chapters": "节目段落",
+        "Close Modal Dialog": "关闭弹窗",
+        "Descriptions": "描述",
+        "descriptions off": "关闭描述",
+        "Audio Track": "音轨",
+        "You aborted the media playback": "视频播放被终止",
+        "A network error caused the media download to fail part-way.": "网络错误导致视频下载中途失败。",
+        "The media could not be loaded, either because the server or network failed or because the format is not supported.": "视频因格式不支持或者服务器或网络的问题无法加载。",
+        "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "由于视频文件损坏或是该视频使用了你的浏览器不支持的功能，播放终止。",
+        "No compatible source was found for this media.": "无法找到此视频兼容的源。",
+        "The media is encrypted and we do not have the keys to decrypt it.": "视频已加密，无法解密。",
+        "Play Video": "播放视频",
+        "Close": "关闭",
+        "Modal Window": "弹窗",
+        "This is a modal window": "这是一个弹窗",
+        "This modal can be closed by pressing the Escape key or activating the close button.": "可以按ESC按键或启用关闭按钮来关闭此弹窗。",
+        ", opens captions settings dialog": ", 开启标题设置弹窗",
+        ", opens subtitles settings dialog": ", 开启字幕设置弹窗",
+        ", opens descriptions settings dialog": ", 开启描述设置弹窗",
+        ", selected": ", 选择",
+        "captions settings": "字幕设定",
+        "Audio Player": "音频播放器",
+        "Video Player": "视频播放器",
+        "Replay": "重播",
+        "Progress Bar": "进度小节",
+        "Volume Level": "音量",
+        "subtitles settings": "字幕设定",
+        "descriptions settings": "描述设定",
+        "Text": "文字",
+        "White": "白",
+        "Black": "黑",
+        "Red": "红",
+        "Green": "绿",
+        "Blue": "蓝",
+        "Yellow": "黄",
+        "Magenta": "紫红",
+        "Cyan": "青",
+        "Background": "背景",
+        "Window": "视窗",
+        "Transparent": "透明",
+        "Semi-Transparent": "半透明",
+        "Opaque": "不透明",
+        "Font Size": "字体尺寸",
+        "Text Edge Style": "字体边缘样式",
+        "None": "无",
+        "Raised": "浮雕",
+        "Depressed": "压低",
+        "Uniform": "均匀",
+        "Dropshadow": "下阴影",
+        "Font Family": "字体库",
+        "Proportional Sans-Serif": "比例无细体",
+        "Monospace Sans-Serif": "单间隔无细体",
+        "Proportional Serif": "比例细体",
+        "Monospace Serif": "单间隔细体",
+        "Casual": "舒适",
+        "Script": "手写体",
+        "Small Caps": "小型大写字体",
+        "Reset": "重启",
+        "restore all settings to the default values": "恢复全部设定至预设值",
+        "Done": "完成",
+        "Caption Settings Dialog": "字幕设定视窗",
+        "Beginning of dialog window. Escape will cancel and close the window.": "开始对话视窗。离开会取消及关闭视窗",
+        "End of dialog window.": "结束对话视窗"
+    });
+</script>
+</body>
+</html>

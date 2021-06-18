@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container" style="padding-bottom: 100px;">
+
+    <div class="row" style="margin-top: 2%; padding-top: 50px; padding-bottom: 20px;">
+        <ol class="breadcrumb">
+            <li><a href="/">首页</a></li>
+            <li><a href="/" th:text="${courseCategory.category}"></a></li>
+        </ol>
+    </div>
+    <div class="row">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#recommend" aria-controls="home" role="tab"
+                                                      data-toggle="tab">热度排序</a>
+            </li>
+            <li role="presentation"><a href="#newest" aria-controls="newest" role="tab" data-toggle="tab">最新排序</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="recommend">
+                <div class="courseProfile" style="width: 230px; display: inline-block;" th:each="courseRanking, courseRankingStat: ${courseRankingList_hottest}">
+                    <div class="thumbnail" th:onclick="courseClick([[${courseRanking.course.id}]]);" style="margin: 10px;">
+                        <img th:src="${courseRanking.course.imageSite}" alt="课程缩略图">
+                        <div class="caption">
+                            <h4 th:text="${courseRanking.course.name}">课程标题</h4>
+                            <p th:text="${courseRanking.course.profile}"
+                               style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                课程简介</p>
+                            <!--<p><a href="#" class="btn btn-primary" role="button">Button</a>
+                                <a href="#" class="btn btn-default" role="button">Button</a></p>-->
+                            讲师：<span th:text="${courseRanking.course.lecturer.nickname}"></span><br>
+                            参加人数：<span th:text="${courseRanking.num}"></span>
+                            &emsp;&emsp;
+                            <span th:if="${courseRanking.course.money!=0}" class="redTag" th:text="'￥'+${courseRanking.course.money}"></span>
+                            <span th:if="${courseRanking.course.money==0}" class="greenTag">免费</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="newest">
+                <div class="courseProfile" style="width: 230px; display: inline-block;" th:each="courseRanking, courseRankingStat: ${courseRankingList_newest}">
+                    <div class="thumbnail" th:onclick="courseClick([[${courseRanking.course.id}]]);" style="margin: 10px;">
+                        <img th:src="${courseRanking.course.imageSite}" alt="课程缩略图">
+                        <div class="caption">
+                            <h4 th:text="${courseRanking.course.name}">课程标题</h4>
+                            <p th:text="${courseRanking.course.profile}"
+                               style="max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                课程简介</p>
+                            <!--<p><a href="#" class="btn btn-primary" role="button">Button</a>
+                                <a href="#" class="btn btn-default" role="button">Button</a></p>-->
+                            讲师：<span th:text="${courseRanking.course.lecturer.nickname}"></span><br>
+                            参加人数：<span th:text="${courseRanking.num}"></span>
+                            &emsp;&emsp;
+                            <span th:if="${courseRanking.course.money!=0}" class="redTag" th:text="'￥'+${courseRanking.course.money}"></span>
+                            <span th:if="${courseRanking.course.money==0}" class="greenTag">免费</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+<head th:replace="home :: footer"></head>
+</body>
+</html>

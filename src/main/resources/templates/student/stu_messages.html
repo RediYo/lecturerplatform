@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+
+  <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+    <div class="col-md-3" >
+      <ul class="nav nav-pills nav-stacked nav-pills-fit">
+        <li role="presentation"><a th:href="@{/student/course/list}"><span
+                class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 我的课程</a></li>
+        <li role="presentation" ><a th:href="@{/student/lecturer/follow-list}"><span
+                class="glyphicon glyphicon-heart"
+                aria-hidden="true"></span> 关注讲师</a></li>
+        <li role="presentation"><a th:href="@{/student/course/collection}"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+          收藏课程</a></li>
+        <li role="presentation"><a th:href="@{/student/course/news}"><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+          课程动态</a></li>
+        <li role="presentation" class="active"><a th:href="@{/student/info/messages}"><span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
+          我的消息</a></li>
+        <li role="presentation"><a th:href="@{/student/course/orders}"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+          我的订单</a></li>
+        <li role="presentation"><a th:href="@{/student/info}"><span class="glyphicon glyphicon-user"
+                                                                    aria-hidden="true"></span> 个人信息</a></li>
+        <li role="presentation"><a th:href="@{/student/password}"><span class="glyphicon glyphicon-edit"
+                                                                        aria-hidden="true"></span> 修改密码</a></li>
+      </ul>
+    </div>
+    <div class="col-md-9 right-box" style="padding-left: 30px; padding-right: 30px;">
+      <div>
+        <div class="row">
+          <ol class="breadcrumb">
+            <li class="active">消息列表</li>
+          </ol>
+        </div>
+        <h4>未读</h4>
+        <div class="row" th:if="${commentList_unread.size()==0}">
+          <span>暂无</span>
+        </div>
+        <div class="row" th:if="${commentList_unread.size()!=0}">
+          <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+            <div style="border: 1px  #000000; width: 90%; margin: 0 auto;"
+                 th:each="comment : ${commentList_unread}">
+              <div class="row">
+                <a target="_blank" th:href="@{'/student/course/comment-detail?courseId='+${comment.course.id}+'&&commentId='+${comment.topComment.id}}">
+                    <p class="profile"><span th:text="${comment.createTime}"></span> <span th:text="${comment.nickname}"></span>在课程 <span th:text="${comment.course.name}"></span>|<span th:text="${comment.topComment.title}"></span>评论区 回复了你：<span th:text="${comment.content}"></span></p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.row -->
+        <hr>
+        <h4>已读</h4>
+        <div class="row" th:if="${commentList_read.size()==0}">
+          <span>暂无</span>
+        </div>
+        <div class="row" th:if="${commentList_read.size()!=0}">
+          <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+            <div style="border: 1px  #000000; width: 90%; margin: 0 auto;"
+                 th:each="comment : ${commentList_read}">
+              <div class="row">
+                <a target="_blank" th:href="@{'/student/course/comment-detail?courseId='+${comment.course.id}+'&&commentId='+${comment.topComment.id}}">
+                  <p class="profile"><span th:text="${comment.createTime}"></span> <span th:text="${comment.nickname}"></span>在课程<span th:text="${comment.course.name}"></span>|<span th:text="${comment.topComment.title}"></span>评论区回复了你：<span th:text="${comment.content}"></span></p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.row -->
+      </div>
+    </div>
+  </div>
+
+</div><!--container-->
+</body>
+</html>

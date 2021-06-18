@@ -1,0 +1,83 @@
+.control-box {
+    width: 1170px;
+    height: 258px;
+    background-image: url(../images/hots_bg.png);
+    background-size: 1055px;
+    background-repeat: no-repeat;
+    background-position: 60px 165px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 80px;
+}
+
+.control-box ul {
+    list-style: none;
+    position: relative;
+}
+
+.control-box ul li {
+    position: absolute;
+    top: 50px;
+    cursor: pointer;
+}
+
+.prev {
+    left: 0;
+}
+
+.next {
+    right: 0;
+}
+
+.bigbox {
+    overflow: hidden;
+    width: 1032px;
+    height: 258px;
+    margin: auto 70px auto;
+}
+
+#switcher {
+    height: 258px;
+    left: 0px;
+}
+
+.content_1.content_2 {
+    width: 100%;
+    float: left;
+}
+
+.box {
+    transition: all .7s ease 0s;
+    width: 258px;
+    height: 258px;
+    float: left;
+    border-left: 3px white solid;
+}
+
+.box {
+    background-size: cover;
+}
+
+.shadow {
+    width: 258px;
+    height: 80px;
+    /* opacity: 1; */
+    background-color: rgba(0, 0, 0, 0.45);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000, endColorstr=#66000000);
+    margin-top: 180px;
+    color: white;
+    font-size: 14px;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.shadow span {
+    /*display: inline-block;*/
+    /*width: 258px;
+    height: 80px;*/
+    color: white;
+    text-decoration: none;
+}
+.shadow p{
+    color: white;
+}

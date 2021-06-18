@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="admin/admin_fragment :: common_head"></head>
+
+<body>
+
+<div th:replace="admin/admin_fragment :: common_nav"></div>
+
+<div class="container">
+
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <div class="list-group "><!--列表组-->
+                <a href="/admin/application/list" class="list-group-item"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 讲师申请</a>
+                <a href="/admin/data/show" class="list-group-item active"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> 后台数据</a>
+                <a href="/admin/setting" class="list-group-item"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> 课程设置</a>
+                <a href="/admin/order/list" class="list-group-item"><span class="glyphicon glyphicon-euro"
+                                                                          aria-hidden="true"></span> 订单管理</a>
+                <a href="/admin/feedback/list" class="list-group-item"><span class="glyphicon glyphicon-comment"
+                                                                             aria-hidden="true"></span> 平台反馈</a>
+                <a href="/admin/password" class="list-group-item"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 修改密码</a>
+            </div>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">数据中心</li>
+                </ol>
+            </div>
+            <div class="row">
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                <div id="totalChart" style="width: 600px;height:400px;"></div>
+            </div>
+            <div class="row">
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                <div id="categoryChart" style="width: 800px;height:500px;"></div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        // 基于准备好的dom，初始化echarts实例
+        var Chart_one = echarts.init(document.getElementById('totalChart'));
+
+        // 显示标题，图例和空的坐标轴
+        Chart_one.setOption({
+            title: {
+                text: '基本数据统计'
+            },
+            tooltip: {},
+            legend: {
+                data:['总数']
+            },
+            xAxis: {
+                data: ["讲师","学生","课程","订单"]
+            },
+            yAxis: {},
+            series: [{
+                name: '总数',
+                type: 'bar',
+                data: []
+            }]
+        });
+
+        $.ajax({
+            url: "/admin/data/user-data-show",
+            type: "GET",
+            datatype: "json",/*返回的就是一个json对象*/
+            success: function (data) {
+                Chart_one.setOption({
+                    series: [{
+                        // 根据名字对应到相应的系列
+                        name: '总数',
+                        data: data
+                    }]
+                });
+            }
+        });
+
+        var Chart_two = echarts.init(document.getElementById('categoryChart'));
+
+        // 显示标题，图例和空的坐标轴
+        Chart_two.setOption({
+            title: {
+                text: '课程分类数量统计'
+            },
+            tooltip: {},
+            legend: {
+                data:['课程数量']
+            },
+            xAxis: {
+                data: []
+            },
+            yAxis: {},
+            series: [{
+                name: '课程数量',
+                type: 'bar',
+                data: []
+            }]
+        });
+
+        $.ajax({
+            url: "/admin/data/category-data-show",
+            type: "GET",
+            datatype: "json",/*返回的就是一个json对象*/
+            success: function (data) {
+                Chart_two.setOption({
+                    xAxis: {
+                        data: data.categories
+                    },
+                    series: [{
+                        // 根据名字对应到相应的系列
+                        name: '课程数量',
+                        data: data.nums
+                    }]
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+
+<body>
+
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3">
+            <ul class="nav nav-pills nav-stacked nav-pills-fit">
+                <li role="presentation"><a th:href="@{/student/course/list}"><span
+                        class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 我的课程</a></li>
+                <li role="presentation" class="active"><a th:href="@{/student/lecturer/follow-list}"><span
+                        class="glyphicon glyphicon-heart"
+                        aria-hidden="true"></span> 关注讲师</a></li>
+                <li role="presentation"><a th:href="@{/student/course/collection}"><span
+                        class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                    收藏课程</a></li>
+                <li role="presentation"><a th:href="@{/student/course/news}"><span class="glyphicon glyphicon-time"
+                                                                                   aria-hidden="true"></span>
+                    课程动态</a></li>
+                <li role="presentation"><a th:href="@{/student/info/messages}"><span class="glyphicon glyphicon-bell"
+                                                                                     aria-hidden="true"></span>
+                    我的消息</a></li>
+                <li role="presentation"><a th:href="@{/student/course/orders}"><span
+                        class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                    我的订单</a></li>
+                <li role="presentation"><a th:href="@{/student/info}"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a></li>
+                <li role="presentation"><a th:href="@{/student/password}"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 right-box" style="padding-left: 30px; padding-right: 30px;">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">关注讲师</li>
+                </ol>
+            </div>
+            <div class="panel-body" style="max-height: 400px; overflow-y:scroll"><!--滚动条-->
+                <div style="border: 1px  #000000; width: 90%; margin: 0 auto;"
+                     th:each="lecturer : ${lecturers}">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <a target="_blank"
+                               th:href="@{|/student/lecturer/follow-list-info?username=${lecturer.username}|}">
+                                <img class="img-circle" height="60px" width="60px"
+                                     th:src="${lecturer.imageSite}" alt="头像">
+                            </a>
+                        </div>
+                        <div class="col-md-2" style="margin-left: -20px">
+                            <span th:text="${lecturer.nickname}"></span><br>
+                            <span th:text="${lecturer.sex}"></span><br>
+                            粉丝 <span th:text="${lecturer.followNum}"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <p class="profile-3" th:text="${lecturer.profile}">
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <a th:href="@{|/student/lecturer/follow-list-process?username=${lecturer.username}|}"
+                               class="btn btn-primary" role="button">取消关注</a>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!--container-->
+</body>
+</html>

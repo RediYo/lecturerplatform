@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="home :: common_head"></head>
+<body>
+<div th:replace="home :: common_nav"></div>
+
+<div class="container">
+    <div class="row lp-border-shadow" style="margin-top: 5%; padding-top: 50px; padding-bottom: 50px;">
+        <div class="col-md-3 ">
+            <ul class="nav nav-pills nav-stacked nav-pills-fit">
+                <li role="presentation"><a th:href="@{/student/course/list}"><span
+                        class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> 我的课程</a></li>
+                <li role="presentation"><a th:href="@{/student/lecturer/follow-list}"><span
+                        class="glyphicon glyphicon-heart" aria-hidden="true"></span> 关注讲师</a></li>
+                <li role="presentation"><a th:href="@{/student/course/collection}"><span
+                        class="glyphicon glyphicon-star" aria-hidden="true"></span> 收藏课程</a></li>
+                <li role="presentation" class="active"><a th:href="@{/student/course/news}"><span
+                        class="glyphicon glyphicon-time" aria-hidden="true"></span> 课程动态</a></li>
+                <li role="presentation"><a th:href="@{/student/info/messages}"><span class="glyphicon glyphicon-bell"
+                                                                                     aria-hidden="true"></span>
+                    我的消息</a></li>
+                <li role="presentation"><a th:href="@{/student/course/orders}"><span
+                        class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                    我的订单</a></li>
+                <li role="presentation"><a th:href="@{/student/info}"><span class="glyphicon glyphicon-user"
+                                                                            aria-hidden="true"></span> 个人信息</a></li>
+                <li role="presentation"><a th:href="@{/student/password}"><span class="glyphicon glyphicon-edit"
+                                                                                aria-hidden="true"></span> 修改密码</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 right-box">
+            <div class="row">
+                <ol class="breadcrumb">
+                    <li class="active">课程动态</li>
+                </ol>
+            </div>
+            <div th:each="stuLectCourseNews, stuLectCourseNewsStat: ${stuLectCourseNewsList}">
+                <h5>开课啦！[[${stuLectCourseNews.datetime}]]</h5>
+                <div class="media">
+                    <div class="media-left">
+                        <a th:href="@{|/student/course/view?id=${stuLectCourseNews.courseId}|}" target="_blank">
+                            <img width="144px" height="90px" class="media-object" th:src="${stuLectCourseNews.imageSite}"
+                                 alt="...">
+                        </a>
+                    </div>
+                    <div class="media-body row">
+                        <div class="col-sm-8">
+                            <a th:href="@{|/student/course/view?id=${stuLectCourseNews.courseId}|}">
+                                <h4 class="media-heading" th:text="${stuLectCourseNews.courseName}">Media heading</h4>
+                            </a>
+                            <a th:text=" ' 讲师：' +${stuLectCourseNews.lectName}"
+                               th:href="@{|/student/lecturer/lect-info?id=${stuLectCourseNews.lectUsername}|}">讲师</a><br>
+                            <span th:if="${stuLectCourseNews.money==0}" class="label label-success">免费</span>
+                            <span th:if="${stuLectCourseNews.money!=0}" class="label label-danger">付费</span>
+                            <div style="margin-top: 5px;"><span class="glyphicon glyphicon-user"
+                                                                aria-hidden="true"></span>
+                                [[${stuLectCourseNews.course.courseRanking.num}]]
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div><a th:href="@{|/student/course/view?id=${stuLectCourseNews.courseId}|}"
+                                    class="btn btn-primary">查看课程</a></div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <!--<div class="panel panel-default "
+                 th:each="stuLectCourseNews, stuLectCourseNewsStat: ${stuLectCourseNewsList}">
+                <div class="panel-heading">开课啦！<a th:text="${stuLectCourseNews.courseName}"
+                                                  th:href="@{|/student/course/view?id=${stuLectCourseNews.courseId}|}"
+                                                  target="_blank">课程名称</a></div>
+                <div class="panel-body">
+                    <div class="col-md-4" style="height: 120px">
+                        <a th:href="@{|/student/course/view?id=${stuLectCourseNews.courseId}|}" target="_blank"><img
+                                th:src="${stuLectCourseNews.imageSite}" style="width: 100%; height: 100%;"
+                                alt="缩略图"/></a>
+                    </div>
+                    <div class="col-md-5">
+                        讲师：<span th:text="${stuLectCourseNews.lectName}"></span><br>
+                        <span>简介：</span>
+                        <span th:if="${stuLectCourseNews.money==0}" class="label label-success">免费</span>
+                        <span th:if="${stuLectCourseNews.money!=0}" class="label label-danger">付费</span><br>
+                        <p th:text="${stuLectCourseNews.courseProfile}" class="profile"></p>
+                        时间 <span th:text="${stuLectCourseNews.datetime}"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <div><a th:href="@{|/student/course/view?id=${stuLectCourseNews.courseId}|}"
+                                class="btn btn-primary">查看课程</a></div>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
